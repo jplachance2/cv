@@ -1,0 +1,1283 @@
+<!DOCTYPE html>
+<html lang="fr-CA">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CV guidé — Préparation au marché du travail</title>
+<style>
+:root{
+  --encre:#1B2430;
+  --acier:#5A6B7E;
+  --trait:#C7CED6;
+  --fond:#E9ECEF;
+  --panneau:#FFFFFF;
+  --jaune:#F2B705;
+  --jaune-pale:#FFF3CE;
+  --vert:#237A4B;
+  --vert-pale:#E2F2E8;
+  --rouge:#B3302A;
+  --rouge-pale:#FBE7E5;
+  --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --doc: Arial, "Helvetica Neue", Helvetica, sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{background:var(--fond);color:var(--encre);font-family:var(--ui);font-size:15px;line-height:1.5}
+button{font-family:inherit;font-size:inherit;cursor:pointer}
+input,select{font-family:inherit;font-size:inherit}
+
+/* ---------- structure ---------- */
+.app{display:grid;grid-template-columns:236px minmax(0,1fr) 440px;height:100vh;overflow:hidden}
+.rail{background:var(--encre);color:#fff;overflow-y:auto;display:flex;flex-direction:column}
+.centre{overflow-y:auto;padding:0 0 120px}
+.apercu{background:#DDE1E6;overflow-y:auto;border-left:1px solid var(--trait);padding:18px}
+
+/* ---------- rail ---------- */
+.marque{padding:20px 18px 14px;border-bottom:1px solid #33404F}
+.marque h1{margin:0;font-size:15px;font-weight:650;letter-spacing:-.01em}
+.marque p{margin:4px 0 0;font-size:12px;color:#93A2B3}
+.jauge{padding:14px 18px;border-bottom:1px solid #33404F}
+.jauge-barre{height:6px;background:#33404F;border-radius:3px;overflow:hidden}
+.jauge-plein{height:100%;width:0;background:var(--jaune);transition:width .3s}
+.jauge-txt{font-size:12px;color:#93A2B3;margin-top:7px}
+.etapes{list-style:none;margin:0;padding:8px 0;flex:1}
+.etape{display:flex;gap:11px;align-items:flex-start;padding:10px 18px;cursor:pointer;border-left:3px solid transparent}
+.etape:hover:not(.verrou){background:#242F3C}
+.etape .num{flex:0 0 22px;height:22px;border-radius:50%;background:#33404F;color:#93A2B3;
+  font-size:12px;font-weight:650;display:flex;align-items:center;justify-content:center;margin-top:1px}
+.etape .lib{font-size:13.5px;color:#C3CDD8;line-height:1.35}
+.etape.active{background:#242F3C;border-left-color:var(--jaune)}
+.etape.active .lib{color:#fff;font-weight:600}
+.etape.active .num{background:var(--jaune);color:var(--encre)}
+.etape.fait .num{background:var(--vert);color:#fff}
+.etape.verrou{cursor:not-allowed;opacity:.42}
+.etape.verrou .lib::after{content:" 🔒";font-size:11px}
+.pied-rail{padding:14px 18px;border-top:1px solid #33404F;display:flex;flex-direction:column;gap:8px}
+.pied-rail button{background:none;border:1px solid #45536380;color:#C3CDD8;padding:8px;border-radius:5px;text-align:left}
+.pied-rail button:hover{background:#242F3C;color:#fff}
+
+/* ---------- panneau central ---------- */
+.entete{position:sticky;top:0;background:var(--panneau);border-bottom:1px solid var(--trait);
+  padding:20px 34px 16px;z-index:5}
+.entete .rang{font-size:12.5px;color:var(--acier);margin-bottom:3px}
+.entete h2{margin:0;font-size:23px;letter-spacing:-.02em;font-weight:650}
+.entete p{margin:7px 0 0;font-size:14px;color:var(--acier);max-width:62ch}
+.corps{padding:22px 34px;max-width:760px}
+
+.champ{margin-bottom:18px}
+.champ>label{display:block;font-size:13.5px;font-weight:600;margin-bottom:5px}
+.aide{font-size:12.5px;color:var(--acier);margin:0 0 6px;max-width:62ch}
+.champ input[type=text],.champ input[type=email],.champ input[type=tel],.champ input[type=number],.champ select{
+  width:100%;padding:9px 11px;border:1px solid var(--trait);border-radius:5px;background:#fff}
+.champ input:focus,.champ select:focus{outline:2px solid var(--jaune);outline-offset:1px;border-color:var(--jaune)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+
+.avis{border-left:3px solid var(--jaune);background:var(--jaune-pale);padding:11px 14px;
+  border-radius:0 5px 5px 0;font-size:13.5px;margin-bottom:20px;max-width:66ch}
+.avis strong{display:block;margin-bottom:3px}
+
+.cases{display:flex;flex-wrap:wrap;gap:7px}
+.case{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--trait);background:#fff;
+  padding:7px 12px;border-radius:20px;font-size:13.5px;cursor:pointer}
+.case:hover{border-color:var(--acier)}
+.case input{margin:0}
+.case.coche{background:var(--encre);color:#fff;border-color:var(--encre)}
+
+.lignes{display:flex;flex-direction:column;gap:8px}
+.ligne{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--trait);background:#fff;
+  padding:11px 13px;border-radius:6px;cursor:pointer;font-size:14px}
+.ligne:hover{border-color:var(--acier)}
+.ligne.coche{border-color:var(--encre);border-width:2px;padding:10px 12px;background:#F8F9FA}
+.ligne input[type=checkbox]{margin-top:3px;flex:0 0 auto}
+.ligne .txt{flex:1}
+.ligne .nb{width:66px;padding:4px 7px;border:1px solid var(--trait);border-radius:4px;margin:0 4px}
+
+.bloc{border:1px solid var(--trait);border-radius:8px;background:var(--panneau);padding:18px 20px;margin-bottom:18px}
+.bloc h3{margin:0 0 14px;font-size:15px;font-weight:650}
+.bloc h3 .sup{float:right;font-weight:400;font-size:13px;color:var(--rouge);cursor:pointer}
+
+.compteur{font-size:12.5px;color:var(--acier);margin-top:7px}
+.compteur.ok{color:var(--vert);font-weight:600}
+.compteur.non{color:var(--rouge);font-weight:600}
+
+.ajout{background:#fff;border:1px dashed var(--acier);color:var(--encre);padding:11px 16px;
+  border-radius:6px;width:100%;font-weight:600}
+.ajout:hover{background:var(--jaune-pale);border-color:var(--jaune)}
+
+/* ---------- barre du bas ---------- */
+.barre{position:fixed;bottom:0;left:236px;right:440px;background:var(--panneau);
+  border-top:1px solid var(--trait);padding:13px 34px;display:flex;align-items:center;gap:16px;z-index:6}
+.barre .etat{flex:1;font-size:13.5px}
+.barre .etat.bloque{color:var(--rouge)}
+.barre .etat.ok{color:var(--vert);font-weight:600}
+.btn{background:var(--encre);color:#fff;border:none;padding:11px 22px;border-radius:6px;font-weight:650}
+.btn:hover{background:#2C3B4C}
+.btn[disabled]{background:#B7BEC6;cursor:not-allowed}
+.btn.sec{background:none;color:var(--encre);border:1px solid var(--trait)}
+.btn.sec:hover{background:var(--fond)}
+
+/* ---------- feuille ---------- */
+.apercu h4{margin:0 0 12px;font-size:12.5px;color:#5A6B7E;font-weight:600}
+.feuille-cadre{background:#fff;box-shadow:0 2px 12px rgba(27,36,48,.16);padding:44px 42px;
+  font-family:var(--doc);font-size:9.6pt;line-height:1.34;color:#000;min-height:560px}
+.feuille-cadre .nom{font-size:17pt;font-weight:700;letter-spacing:.5px;margin:0 0 3px}
+.feuille-cadre .coord{font-size:9.4pt;margin:0 0 16px;color:#222}
+.feuille-cadre h5{font-size:9.6pt;font-weight:700;letter-spacing:1.1px;margin:13px 0 5px;
+  padding-bottom:2px;border-bottom:1px solid #000;text-transform:uppercase}
+.feuille-cadre .entree{margin-bottom:9px}
+.feuille-cadre .tete{display:flex;justify-content:space-between;gap:12px;font-weight:700}
+.feuille-cadre .sous{font-style:italic;color:#222}
+.feuille-cadre ul{margin:3px 0 0;padding-left:15px}
+.feuille-cadre li{margin-bottom:1px}
+.feuille-cadre .vide{color:#B0B6BD;font-style:italic}
+.feuille-cadre p{margin:0 0 3px}
+
+/* ---------- vérif ---------- */
+.grille{list-style:none;margin:0;padding:0}
+.grille li{display:flex;gap:10px;padding:9px 12px;border-radius:5px;margin-bottom:5px;font-size:13.5px;
+  background:var(--rouge-pale);color:#6E1F1B}
+.grille li.ok{background:var(--vert-pale);color:#17542F}
+.grille li b{flex:0 0 auto}
+
+.sorties{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
+.sortie{border:1px solid var(--trait);border-radius:8px;padding:16px;background:#fff}
+.sortie h4{margin:0 0 5px;font-size:14.5px}
+.sortie p{margin:0 0 11px;font-size:13px;color:var(--acier)}
+
+/* ---------- modale ---------- */
+.voile{position:fixed;inset:0;background:rgba(27,36,48,.55);display:none;align-items:center;
+  justify-content:center;z-index:40;padding:20px}
+.voile.on{display:flex}
+.modale{background:#fff;border-radius:10px;max-width:620px;width:100%;max-height:86vh;overflow-y:auto;padding:26px}
+.modale h3{margin:0 0 6px;font-size:19px}
+.modale textarea{width:100%;height:130px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
+  padding:10px;border:1px solid var(--trait);border-radius:5px;resize:vertical}
+
+.banniere{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--jaune-pale);
+  border-bottom:2px solid var(--jaune);padding:13px 34px;font-size:14px}
+.banniere span{flex:1;min-width:220px}
+.banniere .btn{padding:8px 15px}
+
+/* ---------- impression ---------- */
+@media print{
+  .apercu{display:block!important}
+  body *{visibility:hidden}
+  .feuille-cadre,.feuille-cadre *{visibility:visible}
+  .feuille-cadre{position:absolute;left:0;top:0;width:100%;box-shadow:none;padding:0;font-size:10pt}
+  @page{margin:1.5cm}
+}
+@media screen and (max-width:1180px){
+  .app{grid-template-columns:200px minmax(0,1fr)}
+  .apercu{display:none}
+  .barre{right:0}
+}
+@media screen and (max-width:760px){
+  .app{grid-template-columns:1fr}
+  .rail{position:fixed;inset:0 auto 0 0;width:236px;transform:translateX(-100%);transition:transform .2s;z-index:30}
+  .rail.on{transform:none}
+  .barre{left:0}
+  .corps,.entete{padding-left:18px;padding-right:18px}
+}
+</style>
+</head>
+<body>
+
+<div class="app">
+  <nav class="rail" id="rail">
+    <div class="marque">
+      <h1>Mon CV</h1>
+      <p id="marque-cours">Préparation au marché du travail</p>
+    </div>
+    <div class="jauge">
+      <div class="jauge-barre"><div class="jauge-plein" id="jauge-plein"></div></div>
+      <div class="jauge-txt" id="jauge-txt">0 étape sur 9</div>
+    </div>
+    <ul class="etapes" id="etapes"></ul>
+    <div class="pied-rail">
+      <button onclick="ouvrirCode()">🔑 Mon code de reprise</button>
+      <button onclick="toutEffacer()">Tout effacer</button>
+    </div>
+  </nav>
+
+  <main class="centre" id="centre">
+    <div class="entete">
+      <div class="rang" id="rang"></div>
+      <h2 id="titre"></h2>
+      <p id="intro"></p>
+    </div>
+    <div class="corps" id="corps"></div>
+  </main>
+
+  <aside class="apercu">
+    <h4>Ton CV en direct</h4>
+    <div class="feuille-cadre" id="feuille"></div>
+  </aside>
+</div>
+
+<div class="barre">
+  <button class="btn sec" id="btn-prec" onclick="allerPrec()">Retour</button>
+  <div class="etat" id="etat"></div>
+  <button class="btn" id="btn-suiv" onclick="allerSuiv()">Continuer</button>
+</div>
+
+<div class="voile" id="voile" onclick="if(event.target===this)fermerModale()">
+  <div class="modale" id="modale"></div>
+</div>
+
+<script>
+/* =====================================================================
+   CV guidé — pré-DEP / PMT
+   Fichier autonome. Aucune connexion, aucune donnée transmise.
+   ===================================================================== */
+
+const CONFIG = {
+  NOM_COURS:           "Préparation au marché du travail",
+  NOM_ECOLE:           "",                 // ex. : "École secondaire Monseigneur-A.-M.-Parent"
+  COURRIEL_ENSEIGNANT: "",                 // ex. : "prenom.nom@csmv.qc.ca"
+  ANNEE_DEBUT:         "2025",
+  ANNEE_FIN:           "2027",
+  STAGE_DEBUT:         "novembre 2026",
+  STAGE_FIN:           "avril 2027"
+};
+
+/* ---------- domaines : métiers, DEP, compétences ---------- */
+const DOMAINES = {
+  alimentation:{ nom:"Alimentation et restauration",
+    metiers:[
+      {m:"cuisine",                    dep:"Cuisine",                     c:"École hôtelière de la Montérégie"},
+      {m:"boulangerie",                dep:"Boulangerie",                 c:"École hôtelière de la Montérégie"},
+      {m:"pâtisserie",                 dep:"Pâtisserie",                  c:"École hôtelière de la Montérégie"},
+      {m:"boucherie de détail",        dep:"Boucherie de détail",         c:"École hôtelière de la Montérégie"},
+      {m:"service de la restauration", dep:"Service de la restauration",  c:"École hôtelière de la Montérégie"}],
+    comp:["Connaissance des règles d'hygiène et de salubrité","Utilisation sécuritaire des couteaux de cuisine",
+          "Techniques de coupe de base","Service à la clientèle en salle","Travail sous pression au service",
+          "Nettoyage et désinfection des surfaces","Réception et rangement des livraisons"]},
+
+  commerce:{ nom:"Commerce et vente",
+    metiers:[
+      {m:"vente-conseil",  dep:"Vente-conseil",  c:"CFP Pierre-Dupuy"},
+      {m:"commerce de détail", dep:"Vente-conseil", c:"CFP Pierre-Dupuy"}],
+    comp:["Service à la clientèle","Utilisation d'une caisse enregistreuse","Mise en valeur des produits en rayon",
+          "Inventaire et réapprovisionnement","Réception de la marchandise","Emballage et étiquetage"]},
+
+  bureau:{ nom:"Bureau, comptabilité et informatique",
+    metiers:[
+      {m:"secrétariat",   dep:"Secrétariat",   c:"CFP Pierre-Dupuy"},
+      {m:"comptabilité",  dep:"Comptabilité",  c:"CFP Pierre-Dupuy"},
+      {m:"soutien informatique", dep:"Soutien informatique", c:"à chercher ailleurs en Montérégie"}],
+    comp:["Saisie de données","Utilisation de Word et d'Excel","Classement de documents",
+          "Réponse au téléphone et prise de messages","Accueil des visiteurs","Rédaction de courriels professionnels"]},
+
+  mecanique:{ nom:"Véhicules et équipement motorisé",
+    metiers:[
+      {m:"mécanique automobile", dep:"Mécanique automobile", c:"à chercher ailleurs en Montérégie"},
+      {m:"carrosserie",          dep:"Carrosserie",          c:"à chercher ailleurs en Montérégie"},
+      {m:"mécanique de petits moteurs", dep:"Mécanique de véhicules légers", c:"à chercher ailleurs en Montérégie"}],
+    comp:["Utilisation des outils manuels d'atelier","Changement de pneus","Vidange et entretien de base",
+          "Lecture d'une fiche de travail","Rangement et propreté de l'atelier","Respect des consignes de sécurité"]},
+
+  batiment:{ nom:"Bâtiment et entretien d'immeubles",
+    metiers:[
+      {m:"entretien général d'immeubles", dep:"Entretien général d'immeubles", c:"École hôtelière de la Montérégie"},
+      {m:"dessin de bâtiment",            dep:"Dessin de bâtiment",            c:"CFP Pierre-Dupuy"},
+      {m:"carrelage",                     dep:"Carrelage",                     c:"CFP Pierre-Dupuy"},
+      {m:"briquetage-maçonnerie",         dep:"Briquetage-maçonnerie",         c:"CFP Pierre-Dupuy"}],
+    comp:["Utilisation des outils manuels","Préparation et nettoyage d'un chantier d'atelier",
+          "Lecture d'un plan simple","Mesure et traçage","Respect des consignes de sécurité","Manutention de matériaux"]},
+
+  electro:{ nom:"Électricité et électromécanique",
+    metiers:[
+      {m:"électricité",                            dep:"Électricité",                            c:"CFP Pierre-Dupuy"},
+      {m:"électromécanique de systèmes automatisés",dep:"Électromécanique de systèmes automatisés",c:"CFP Pierre-Dupuy"},
+      {m:"réfrigération",                          dep:"Réfrigération",                          c:"CFP Pierre-Dupuy"}],
+    comp:["Utilisation des outils manuels","Lecture d'un schéma simple","Mesure avec un multimètre",
+          "Rangement et inventaire des pièces","Respect des consignes de sécurité électrique"]},
+
+  beaute:{ nom:"Coiffure et esthétique",
+    metiers:[
+      {m:"coiffure",   dep:"Coiffure",   c:"CFP Pierre-Dupuy"},
+      {m:"esthétique", dep:"Esthétique", c:"CFP Pierre-Dupuy"}],
+    comp:["Accueil et service à la clientèle","Shampooing et préparation du poste",
+          "Désinfection du matériel","Prise de rendez-vous","Entretien du salon","Conseil de produits"]},
+
+  sante:{ nom:"Santé et assistance",
+    metiers:[
+      {m:"assistance en établissement de santé", dep:"Soutien aux services d'assistance en établissement de santé et de services sociaux (5405)", c:"CFP Charlotte-Tassé"},
+      {m:"santé, assistance et soins infirmiers", dep:"Santé, assistance et soins infirmiers", c:"CFP Charlotte-Tassé"}],
+    comp:["Accompagnement et écoute des personnes","Entretien des chambres et des aires communes",
+          "Distribution des repas","Respect de la confidentialité","Lavage des mains et prévention des infections"]},
+
+  metal:{ nom:"Métallurgie et usinage",
+    metiers:[
+      {m:"soudage-assemblage", dep:"Soudage-assemblage", c:"CFP Pierre-Dupuy"},
+      {m:"usinage",            dep:"Usinage",            c:"CFP Pierre-Dupuy"}],
+    comp:["Lecture d'un plan simple","Mesure de précision","Ébavurage et finition de pièces",
+          "Manutention de pièces métalliques","Port des équipements de protection","Rangement de l'atelier"]},
+
+  infographie:{ nom:"Infographie et présentation visuelle",
+    metiers:[
+      {m:"infographie", dep:"Infographie", c:"CFP Pierre-Dupuy"},
+      {m:"décoration intérieure et présentation visuelle", dep:"Décoration intérieure et présentation visuelle", c:"CFP Pierre-Dupuy"}],
+    comp:["Utilisation d'un logiciel de retouche d'image","Mise en page de base",
+          "Montage d'une vitrine ou d'un présentoir","Préparation de fichiers d'impression","Sens de l'harmonie des couleurs"]},
+
+  horticulture:{ nom:"Horticulture et fleuristerie",
+    metiers:[
+      {m:"horticulture et jardinerie", dep:"Horticulture et jardinerie", c:"à chercher ailleurs en Montérégie"},
+      {m:"fleuristerie",               dep:"Fleuristerie",               c:"à chercher ailleurs en Montérégie"}],
+    comp:["Arrosage et entretien des plantes","Rempotage","Préparation d'arrangements simples",
+          "Entretien des aires de vente","Manutention de sacs et de pots"]},
+
+  entrepot:{ nom:"Entrepôt, manutention et logistique",
+    metiers:[
+      {m:"magasinage",  dep:"Logistique du transport", c:"à chercher ailleurs en Montérégie"},
+      {m:"manutention", dep:"Logistique du transport", c:"à chercher ailleurs en Montérégie"}],
+    comp:["Réception et vérification des commandes","Préparation de commandes","Étiquetage et emballage",
+          "Tenue d'inventaire","Utilisation d'un transpalette manuel","Manutention sécuritaire de charges"]}
+};
+
+/* ---------- banques d'expériences ---------- */
+const EXPERIENCES = {
+  gardiennage:{ titre:"Gardienne ou gardien d'enfants", org:"Travail autonome", lignes:[
+    "Garder {n} enfants âgés de 4 à 12 ans",
+    "Préparer les repas et les collations selon les consignes des parents",
+    "Aider aux devoirs et à la routine du coucher",
+    "Assurer la sécurité des enfants pendant {n} heures d'affilée",
+    "Organiser des jeux et des activités adaptés à leur âge",
+    "Ranger et nettoyer la cuisine après les repas"]},
+  gazon:{ titre:"Entretien de terrains", org:"Travail autonome", lignes:[
+    "Tondre le gazon de {n} terrains résidentiels par semaine",
+    "Tailler les haies et les bordures",
+    "Ramasser et disposer des résidus verts",
+    "Entretenir et nettoyer la tondeuse après chaque usage",
+    "Fixer les prix et encaisser les paiements",
+    "Respecter les horaires convenus avec les clients"]},
+  deneigement:{ titre:"Déneigement", org:"Travail autonome", lignes:[
+    "Déneiger {n} entrées résidentielles après chaque tempête",
+    "Dégager les escaliers et les balcons à la pelle",
+    "Épandre l'abrasif sur les surfaces glacées",
+    "Répondre aux appels des clients tôt le matin",
+    "Travailler à l'extérieur par temps froid pendant plusieurs heures"]},
+  camp:{ titre:"Aide-animatrice ou aide-animateur", org:"Camp de jour", lignes:[
+    "Animer des jeux pour un groupe de {n} enfants",
+    "Accompagner le groupe lors des sorties",
+    "Surveiller les enfants pendant les périodes libres",
+    "Préparer le matériel avant chaque activité",
+    "Appliquer les règles de sécurité du camp",
+    "Communiquer avec les parents à l'arrivée et au départ"]},
+  commerce_fam:{ titre:"Aide au commerce familial", org:"", lignes:[
+    "Accueillir et servir la clientèle",
+    "Placer la marchandise en rayon",
+    "Encaisser les paiements à la caisse",
+    "Nettoyer et ranger l'aire de vente à la fermeture",
+    "Recevoir et vérifier les livraisons",
+    "Répondre au téléphone et prendre les commandes"]},
+  evenement:{ titre:"Aide à l'événement", org:"", lignes:[
+    "Monter et démonter les installations avant et après l'événement",
+    "Servir environ {n} personnes en quelques heures",
+    "Tenir un kiosque d'accueil ou de vente",
+    "Nettoyer et désinfecter les surfaces à la fermeture",
+    "Transporter le matériel et les équipements",
+    "Travailler en équipe sous la direction d'un responsable"]},
+  restaurant:{ titre:"Aide en restauration", org:"", lignes:[
+    "Préparer les postes de travail avant le service",
+    "Laver la vaisselle et les ustensiles de cuisine",
+    "Desservir et nettoyer les tables",
+    "Respecter les règles d'hygiène et de salubrité",
+    "Aider au montage des commandes pendant le rush",
+    "Sortir les déchets et le recyclage à la fermeture"]},
+  menage:{ titre:"Entretien ménager", org:"", lignes:[
+    "Nettoyer les planchers, les surfaces et les salles de bain",
+    "Entretenir {n} logements ou locaux par semaine",
+    "Gérer le matériel et les produits nettoyants de façon sécuritaire",
+    "Vider les poubelles et faire le tri du recyclage",
+    "Travailler de façon autonome sans surveillance directe"]},
+  animaux:{ titre:"Garde et promenade d'animaux", org:"Travail autonome", lignes:[
+    "Promener {n} chiens par semaine",
+    "Nourrir les animaux selon les consignes des propriétaires",
+    "Nettoyer les litières et les espaces de vie",
+    "Donner les médicaments prescrits aux heures prévues",
+    "Rendre compte de chaque visite aux propriétaires"]},
+  devoirs:{ titre:"Aide aux devoirs", org:"", lignes:[
+    "Accompagner {n} élèves du primaire dans leurs devoirs",
+    "Expliquer les notions de mathématiques et de français",
+    "Corriger les exercices et donner de la rétroaction",
+    "Adapter les explications au rythme de chaque élève",
+    "Faire le suivi des progrès avec les parents"]},
+  livraison:{ titre:"Livraison et distribution", org:"", lignes:[
+    "Distribuer les circulaires dans {n} adresses par semaine",
+    "Préparer et trier les envois avant le départ",
+    "Respecter un trajet et un horaire de livraison",
+    "Travailler à l'extérieur par tous les temps"]},
+  arbitrage:{ titre:"Arbitre ou assistante-entraîneure", org:"", lignes:[
+    "Arbitrer {n} parties par fin de semaine",
+    "Appliquer les règlements et gérer les conflits",
+    "Encadrer un groupe de jeunes joueurs",
+    "Préparer le matériel et le terrain avant les parties",
+    "Communiquer avec les entraîneurs et les parents"]}
+};
+
+/* ---------- banques d'implication ---------- */
+const IMPLICATIONS = {
+  benevolat_ev:{ titre:"Bénévole — événement communautaire", lignes:[
+    "Accueillir et orienter les visiteurs",
+    "Servir les repas et les breuvages",
+    "Monter et démonter les kiosques",
+    "Ramasser et trier les déchets à la fermeture"]},
+  guignolee:{ titre:"Bénévole — guignolée ou banque alimentaire", lignes:[
+    "Trier et classer les denrées reçues",
+    "Préparer les paniers alimentaires",
+    "Faire la collecte porte-à-porte en équipe",
+    "Charger et décharger les boîtes"]},
+  cuisine_coll:{ titre:"Bénévole — cuisine collective", lignes:[
+    "Couper et préparer les légumes",
+    "Respecter les règles d'hygiène et le port du filet à cheveux",
+    "Portionner et emballer les repas",
+    "Laver la vaisselle et ranger la cuisine"]},
+  comite:{ titre:"Membre d'un comité étudiant", lignes:[
+    "Participer aux réunions du comité",
+    "Organiser des activités pour les élèves de l'école",
+    "Faire la promotion des activités auprès des groupes",
+    "Tenir un kiosque lors des événements de l'école"]},
+  sport:{ titre:"Membre d'une équipe sportive", lignes:[
+    "S'entraîner {n} fois par semaine pendant toute la saison",
+    "Participer aux parties et aux tournois",
+    "Respecter les consignes de l'entraîneur",
+    "Soutenir les coéquipiers et maintenir un bon esprit d'équipe"]},
+  aines:{ titre:"Bénévole auprès des aînés", lignes:[
+    "Accompagner les résidents lors des activités",
+    "Tenir compagnie et écouter les personnes",
+    "Aider au service des collations",
+    "Respecter la confidentialité des personnes rencontrées"]},
+  quartier:{ titre:"Bénévole — corvée de quartier", lignes:[
+    "Ramasser les déchets dans les parcs et les rues",
+    "Planter et entretenir des végétaux",
+    "Travailler en équipe toute la journée",
+    "Utiliser le matériel d'entretien de façon sécuritaire"]},
+  ecole:{ titre:"Bénévole à l'école", lignes:[
+    "Aider au montage des activités parascolaires",
+    "Accompagner les élèves plus jeunes",
+    "Tenir le kiosque lors des journées portes ouvertes",
+    "Distribuer le matériel et faire le rangement"]}
+};
+
+const QUALITES = ["Ponctualité","Fiabilité","Honnêteté","Travail d'équipe","Débrouillardise","Sens des responsabilités",
+  "Politesse","Patience","Écoute","Rapidité d'exécution","Souci du travail bien fait","Propreté","Autonomie",
+  "Capacité à recevoir des consignes","Résistance au stress","Bonne endurance physique","Entregent","Discrétion",
+  "Curiosité","Persévérance","Esprit d'initiative","Calme","Adaptabilité","Sens de l'organisation"];
+
+const CARTES = ["Hygiène et salubrité alimentaires (MAPAQ)","Secourisme général / RCR","Santé et sécurité générale sur les chantiers (ASP)","SIMDUT","Permis de conduire classe 5","Permis d'apprenti conducteur"];
+const INTERETS = ["Sports d'équipe","Sports individuels","Musique","Jeux vidéo en équipe","Cuisine","Mécanique",
+  "Bricolage et rénovation","Dessin et arts visuels","Plein air et camping","Soin des animaux","Bénévolat","Lecture"];
+const LIENS_REF = ["Ancienne ou ancien employeur","Responsable d'un organisme","Enseignante ou enseignant",
+  "Entraîneure ou entraîneur","Parent d'une famille gardée","Responsable de bénévolat","Voisine ou voisin"];
+const VILLES = ["Longueuil (Vieux-Longueuil)","Longueuil (Saint-Hubert)","Longueuil (Greenfield Park)",
+  "Brossard","Boucherville","Saint-Lambert","Saint-Bruno-de-Montarville","Autre"];
+const MOIS = ["janvier","février","mars","avril","mai","juin","juillet","août","septembre","octobre","novembre","décembre"];
+const JOURS = ["lundi","mardi","mercredi","jeudi","vendredi"];
+const MOTIFS = [
+  "afin de découvrir le métier avant d'entreprendre le DEP",
+  "afin de confirmer mon choix de métier et de préparer mon entrée au DEP",
+  "afin d'apprendre le métier sur le terrain et de me préparer au DEP",
+  "afin de mettre en pratique ce que j'apprends et de valider mon choix de DEP"
+];
+
+const ETAPES = [
+  {id:"coord",  t:"Coordonnées",  i:"Ce que l'employeur lit en premier. Rien d'autre que ce qui sert à te joindre."},
+  {id:"obj",    t:"Objectif",     i:"Une phrase construite à partir de tes choix. Elle dit qui tu es, ce que tu cherches et où tu t'en vas."},
+  {id:"form",   t:"Formation",    i:"À ton âge, c'est la section la plus forte du CV. Elle passe avant l'expérience."},
+  {id:"exp",    t:"Expérience",   i:"Tu as déjà travaillé, même sans employeur. Gardiennage, gazon, déneigement, camp de jour : ça compte."},
+  {id:"imp",    t:"Implication",  i:"Bénévolat, comité, équipe sportive. Ça montre que tu t'engages et que tu tiens parole."},
+  {id:"comp",   t:"Compétences",  i:"Choisis seulement ce que tu peux prouver par une anecdote. Quatre vraies valent mieux que quinze."},
+  {id:"atouts", t:"Atouts",       i:"Langues, cartes, disponibilités. C'est ici que l'employeur voit s'il peut te prendre."},
+  {id:"refs",   t:"Références",   i:"Deux personnes, jamais de la famille, prévenues avant que leur nom soit écrit."},
+  {id:"verif",  t:"Vérification", i:"La grille passe ton CV au peigne fin. Tout doit être vert pour débloquer le PDF et le Word."}
+];
+
+/* ---------- état ---------- */
+const VIDE = () => ({
+  v:2,
+  coord:{prenom:"",nom:"",ville:"",villeAutre:"",tel1:"",tel2:"",tel3:"",courriel:""},
+  obj:{domaine:"",metier:"",motif:0},
+  form:{ecole:CONFIG.NOM_ECOLE,cartes:[]},
+  exp:[],
+  imp:{aucune:false,type:"",org:"",annee:"",lignes:[],nums:{}},
+  comp:{qualites:[],competences:[]},
+  atouts:{anglais:"",autreLangue:"",niveauAutre:"",cartes:[],jours:[],interets:[]},
+  refs:[nouvelleRef(),nouvelleRef()]
+});
+function nouvelleRef(){return {prenom:"",nom:"",lien:"",tel1:"",tel2:"",tel3:"",telInconnu:false,prevenue:false};}
+function nouvelleExp(){return {type:"",org:"",moisD:"",anD:"",moisF:"",anF:"",encours:false,lignes:[],nums:{}};}
+
+let S = VIDE();
+let etape = 0;
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s==null?"":s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const jq = s => String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;')
+  .replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+const opts = (arr,sel,vide) => (vide?'<option value="">'+vide+'</option>':'') +
+  arr.map(o=>{const v=typeof o==="string"?o:o.v, l=typeof o==="string"?o:o.l;
+    return '<option value="'+esc(v)+'"'+(String(sel)===String(v)?' selected':'')+'>'+esc(l)+'</option>';}).join("");
+const annees = () => {const a=[],y=new Date().getFullYear();for(let i=y+1;i>=y-6;i--)a.push(String(i));return a;};
+
+/* =====================================================================
+   VALIDATION — le verrou dur
+   ===================================================================== */
+function valide(i){
+  const c=S.coord, o=S.obj;
+  switch(i){
+    case 0: return !!(c.prenom.trim() && c.nom.trim() && c.ville &&
+             (c.ville!=="Autre" || c.villeAutre.trim()) &&
+             /^\d{3}$/.test(c.tel1) && /^\d{3}$/.test(c.tel2) && /^\d{4}$/.test(c.tel3) &&
+             courrielOk(c.courriel));
+    case 1: return !!(o.domaine && o.metier);
+    case 2: return !!(S.form.ecole.trim());
+    case 3: return S.exp.length>=1 && S.exp.every(expOk);
+    case 4: return (S.imp.aucune ? S.exp.length>=2
+             : !!(S.imp.type && S.imp.annee && S.imp.lignes.length>=2));
+    case 5: return S.comp.qualites.length>=4 && S.comp.qualites.length<=8 && S.comp.competences.length>=2;
+    case 6: return !!S.atouts.anglais && S.atouts.jours.length>=1;
+    case 7: return S.refs.length===2 && S.refs.every(r=>
+             r.prenom.trim() && r.nom.trim() && r.lien && r.prevenue &&
+             (r.telInconnu || (/^\d{3}$/.test(r.tel1)&&/^\d{3}$/.test(r.tel2)&&/^\d{4}$/.test(r.tel3))));
+    case 8: return pretAExporter();
+  }
+  return false;
+}
+function expOk(e){
+  return !!(e.type && e.org.trim() && e.anD && e.lignes.length===3 &&
+    (e.encours || e.anF) && numsOk(e));
+}
+function numsOk(e){
+  const src = EXPERIENCES[e.type]; if(!src) return false;
+  return e.lignes.every(ix => !/\{n\}/.test(src.lignes[ix]) || /^\d+$/.test(String(e.nums[ix]||"")));
+}
+function courrielOk(v){
+  if(!/^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i.test(v)) return false;
+  return !/(xxx|sexy|swag|420|666|bg_|pimp|loser|bitch|drunk|gangst)/i.test(v);
+}
+function accessible(i){ for(let k=0;k<i;k++) if(!valide(k)) return false; return true; }
+function pretAExporter(){
+  for(let k=0;k<8;k++) if(!valide(k)) return false;
+  return S.refs.every(r=>!r.telInconnu);
+}
+
+/* les blocages, en mots, pour la barre du bas */
+function blocage(i){
+  const c=S.coord;
+  if(i===0){
+    if(!c.prenom.trim()||!c.nom.trim()) return "Inscris ton prénom et ton nom.";
+    if(!c.ville) return "Choisis ta ville.";
+    if(c.ville==="Autre"&&!c.villeAutre.trim()) return "Écris le nom de ta ville.";
+    if(!/^\d{3}$/.test(c.tel1)||!/^\d{3}$/.test(c.tel2)||!/^\d{4}$/.test(c.tel3)) return "Ton téléphone doit avoir 10 chiffres.";
+    if(!c.courriel.trim()) return "Inscris ton adresse courriel.";
+    if(!courrielOk(c.courriel)) return "Cette adresse ne passera pas chez un employeur. Utilise prenom.nom.";
+  }
+  if(i===1) return S.obj.domaine ? "Choisis le métier qui t'intéresse." : "Choisis ton domaine.";
+  if(i===2) return "Inscris le nom de ton école.";
+  if(i===3){
+    if(!S.exp.length) return "Ajoute au moins une expérience. Le gardiennage et la tonte de gazon comptent.";
+    const e=S.exp.find(x=>!expOk(x));
+    if(e){
+      if(!e.type) return "Choisis le type de cette expérience.";
+      if(!e.org.trim()) return "Inscris pour qui tu l'as fait.";
+      if(!e.anD||(!e.encours&&!e.anF)) return "Indique les années de cette expérience.";
+      if(e.lignes.length!==3) return "Choisis exactement 3 tâches pour cette expérience ("+e.lignes.length+" sur 3).";
+      return "Il manque un nombre dans une des tâches cochées.";
+    }
+  }
+  if(i===4){
+    if(S.imp.aucune) return "Sans implication, il te faut 2 expériences à l'étape 4.";
+    if(!S.imp.type) return "Choisis ton type d'implication, ou coche la case du bas.";
+    if(!S.imp.annee) return "Indique l'année de ton implication.";
+    return "Choisis au moins 2 tâches ("+S.imp.lignes.length+" sur 2).";
+  }
+  if(i===5){
+    const q=S.comp.qualites.length;
+    if(q<4) return "Choisis au moins 4 qualités ("+q+" sur 4).";
+    if(q>8) return "Maximum 8 qualités. Retires-en "+(q-8)+".";
+    return "Choisis au moins 2 compétences de ton domaine.";
+  }
+  if(i===6) return !S.atouts.anglais ? "Indique ton niveau d'anglais." : "Coche au moins une journée de disponibilité.";
+  if(i===7){
+    const r=S.refs.find(x=>!(x.prenom.trim()&&x.nom.trim()&&x.lien&&x.prevenue&&
+      (x.telInconnu||(/^\d{3}$/.test(x.tel1)&&/^\d{3}$/.test(x.tel2)&&/^\d{4}$/.test(x.tel3)))));
+    if(r){
+      if(!r.prenom.trim()||!r.nom.trim()) return "Inscris le prénom et le nom de ta référence.";
+      if(!r.lien) return "Indique ton lien avec cette personne.";
+      if(!r.telInconnu&&!(/^\d{3}$/.test(r.tel1)&&/^\d{3}$/.test(r.tel2)&&/^\d{4}$/.test(r.tel3)))
+        return "Téléphone de la référence : 10 chiffres, ou coche « je ne l'ai pas encore ».";
+      return "Confirme que la personne a été prévenue.";
+    }
+  }
+  if(i===8){
+    const r=S.refs.find(x=>x.telInconnu);
+    if(r) return "Il manque le téléphone d'une référence. Le PDF et le Word restent bloqués.";
+  }
+  return "";
+}
+
+/* =====================================================================
+   RENDU DES ÉTAPES
+   ===================================================================== */
+function maj(chemin,val){
+  const p=chemin.split("."); let o=S;
+  for(let i=0;i<p.length-1;i++) o=o[p[i]];
+  o[p[p.length-1]]=val;
+  rendreLeger();
+}
+function bascule(arr,val,max){
+  const i=arr.indexOf(val);
+  if(i>=0) arr.splice(i,1);
+  else { if(max&&arr.length>=max) return; arr.push(val); }
+  rendre();
+}
+
+function rendreEtape(){
+  const e=ETAPES[etape];
+  $("#rang").textContent = "Étape "+(etape+1)+" sur 9";
+  $("#titre").textContent = e.t;
+  $("#intro").textContent = e.i;
+  $("#corps").innerHTML = ({
+    coord:vCoord, obj:vObj, form:vForm, exp:vExp, imp:vImp,
+    comp:vComp, atouts:vAtouts, refs:vRefs, verif:vVerif
+  })[e.id]();
+}
+
+function vCoord(){ const c=S.coord; return `
+<div class="avis"><strong>Ce qui ne doit jamais apparaître sur ton CV</strong>
+Ni photo, ni âge, ni date de naissance, ni lieu de naissance, ni statut civil, ni numéro d'assurance sociale.
+Au Québec, un employeur n'a pas le droit de les exiger. Un CV qui les donne quand même a l'air mal conseillé.</div>
+
+<div class="duo">
+  <div class="champ"><label>Prénom</label>
+    <input type="text" value="${esc(c.prenom)}" oninput="maj('coord.prenom',this.value)"></div>
+  <div class="champ"><label>Nom de famille</label>
+    <input type="text" value="${esc(c.nom)}" oninput="maj('coord.nom',this.value)"></div>
+</div>
+
+<div class="champ"><label>Ville</label>
+  <p class="aide">La ville seulement. Jamais ton adresse complète.</p>
+  <select onchange="majF('coord.ville',this.value)">${opts(VILLES,c.ville,"— Choisir —")}</select></div>
+${c.ville==="Autre"?`<div class="champ"><label>Nom de ta ville</label>
+  <input type="text" value="${esc(c.villeAutre)}" oninput="maj('coord.villeAutre',this.value)"></div>`:""}
+
+<div class="champ"><label>Téléphone</label>
+  <p class="aide">Le numéro où on peut vraiment te joindre. Écoute ton message de boîte vocale aujourd'hui : s'il date du secondaire 1, refais-le.</p>
+  <div class="trio">
+    <input type="tel" inputmode="numeric" maxlength="3" placeholder="450" value="${esc(c.tel1)}" oninput="maj('coord.tel1',this.value.replace(/\\D/g,''))">
+    <input type="tel" inputmode="numeric" maxlength="3" placeholder="555" value="${esc(c.tel2)}" oninput="maj('coord.tel2',this.value.replace(/\\D/g,''))">
+    <input type="tel" inputmode="numeric" maxlength="4" placeholder="0142" value="${esc(c.tel3)}" oninput="maj('coord.tel3',this.value.replace(/\\D/g,''))">
+  </div></div>
+
+<div class="champ"><label>Courriel</label>
+  <p class="aide">Le format qui passe : prenom.nom@… Une adresse comme bg_swag2009@… fait rejeter le CV avant qu'il soit lu.</p>
+  <input type="email" value="${esc(c.courriel)}" oninput="maj('coord.courriel',this.value.trim())"></div>`;
+}
+
+function vObj(){
+  const o=S.obj, d=DOMAINES[o.domaine];
+  const listeDom=Object.keys(DOMAINES).map(k=>({v:k,l:DOMAINES[k].nom}));
+  return `
+<div class="avis"><strong>Tu ne rédiges pas cette phrase, tu la construis</strong>
+Fais tes choix : l'outil assemble l'objectif et l'écrit sur ton CV. Tu verras le résultat à droite.</div>
+
+<div class="champ"><label>Domaine qui t'intéresse</label>
+  <select onchange="choisirDomaine(this.value)">${opts(listeDom,o.domaine,"— Choisir —")}</select></div>
+
+${d?`<div class="champ"><label>Métier visé</label>
+  <select onchange="majF('obj.metier',this.value)">${opts(d.metiers.map(m=>({v:m.m,l:m.m})),o.metier,"— Choisir —")}</select></div>`:""}
+
+${o.metier?`<div class="champ"><label>Pourquoi ce stage</label>
+  <select onchange="majF('obj.motif',+this.value)">${opts(MOTIFS.map((m,i)=>({v:i,l:m})),o.motif)}</select></div>
+<div class="bloc"><h3>Ton objectif</h3><p style="margin:0;font-size:14.5px">${esc(texteObjectif())}</p></div>`:""}`;
+}
+function choisirDomaine(v){ S.obj.domaine=v; S.obj.metier=""; S.comp.competences=[]; rendre(); }
+function texteObjectif(){
+  const o=S.obj, d=DOMAINES[o.domaine]; if(!d||!o.metier) return "";
+  const m=d.metiers.find(x=>x.m===o.metier)||{};
+  return "Élève en "+CONFIG.NOM_COURS+", je cherche un stage d'observation en "+o.metier+
+    " de "+CONFIG.STAGE_DEBUT+" à "+CONFIG.STAGE_FIN+", à raison d'une journée par semaine, "+
+    MOTIFS[o.motif]+" en "+m.dep+".";
+}
+
+function vForm(){ const f=S.form; return `
+<div class="avis"><strong>Pourquoi la formation passe avant l'expérience</strong>
+À 16 ans, ce que tu étudies est ce que tu as de plus solide. Un employeur qui lit « pré-DEP » comprend
+tout de suite pourquoi tu es devant lui.</div>
+
+<div class="champ"><label>Nom de ton école</label>
+  <input type="text" value="${esc(f.ecole)}" oninput="maj('form.ecole',this.value)"></div>
+
+<div class="bloc"><h3>Ce qui sera écrit</h3>
+  <p style="margin:0 0 4px"><b>${esc(CONFIG.NOM_COURS)} (pré-DEP)</b> — ${esc(CONFIG.ANNEE_DEBUT)} à ${esc(CONFIG.ANNEE_FIN)}</p>
+  <p style="margin:0 0 4px">${esc(f.ecole||"[ton école]")}</p>
+  <p style="margin:0;color:#5A6B7E">${S.obj.metier?"DEP visé : "+esc(depVise()):"Choisis d'abord ton métier à l'étape 2."}</p></div>
+
+<div class="champ"><label>Cartes et attestations que tu détiens vraiment</label>
+  <p class="aide">Coche seulement ce que tu as en main. Une carte inventée se découvre à la première journée.</p>
+  <div class="cases">${CARTES.map(c=>`<label class="case ${f.cartes.includes(c)?'coche':''}">
+    <input type="checkbox" ${f.cartes.includes(c)?'checked':''} onchange="bascule(S.form.cartes,'${jq(c)}')">${esc(c)}</label>`).join("")}</div></div>`;
+}
+function depVise(){ const d=DOMAINES[S.obj.domaine]; if(!d||!S.obj.metier) return "";
+  const m=d.metiers.find(x=>x.m===S.obj.metier); return m?m.dep+" — "+m.c:""; }
+
+function vExp(){
+  return `
+<div class="avis"><strong>« Je n'ai jamais travaillé »</strong>
+Faux. Garder des enfants, tondre un gazon, pelleter une entrée, aider au dépanneur de ton oncle,
+promener un chien : c'est du travail, et ça se met sur un CV.</div>
+${S.exp.map((e,i)=>blocExp(e,i)).join("")}
+${S.exp.length<2?`<button class="ajout" onclick="S.exp.push(nouvelleExp());rendre()">+ Ajouter une expérience</button>`:""}`;
+}
+function blocExp(e,i){
+  const src=EXPERIENCES[e.type];
+  const liste=Object.keys(EXPERIENCES).map(k=>({v:k,l:EXPERIENCES[k].titre}));
+  return `<div class="bloc"><h3>Expérience ${i+1}
+    ${S.exp.length>1?`<span class="sup" onclick="S.exp.splice(${i},1);rendre()">Retirer</span>`:""}</h3>
+  <div class="champ"><label>Type d'expérience</label>
+    <select onchange="choisirExp(${i},this.value)">${opts(liste,e.type,"— Choisir —")}</select></div>
+  ${src?`
+  <div class="champ"><label>Pour qui / où</label>
+    <p class="aide">Un nom d'entreprise, d'organisme, de famille (« Famille Dubé ») ou « Travail autonome ».</p>
+    <input type="text" value="${esc(e.org)}" oninput="S.exp[${i}].org=this.value;rendreLeger()"></div>
+  <div class="champ"><label>Période</label>
+    <div class="trio">
+      <select onchange="S.exp[${i}].moisD=this.value;rendre()">${opts(MOIS,e.moisD,"Mois début")}</select>
+      <select onchange="S.exp[${i}].anD=this.value;rendre()">${opts(annees(),e.anD,"Année début")}</select>
+      <select onchange="S.exp[${i}].anF=this.value;rendre()" ${e.encours?'disabled':''}>${opts(annees(),e.anF,"Année fin")}</select>
+    </div>
+    <label class="case ${e.encours?'coche':''}" style="margin-top:8px">
+      <input type="checkbox" ${e.encours?'checked':''} onchange="S.exp[${i}].encours=this.checked;rendre()">Je le fais encore aujourd'hui</label>
+  </div>
+  <div class="champ"><label>Choisis exactement 3 tâches</label>
+    <p class="aide">Coche seulement ce que tu as vraiment fait. Les nombres se remplissent avec tes vrais chiffres.</p>
+    <div class="lignes">${src.lignes.map((l,ix)=>ligneTache(l,ix,e.lignes.includes(ix),e.nums[ix],
+      `basculeTache(${i},${ix})`,`majNum(${i},${ix},this.value)`)).join("")}</div>
+    <div class="compteur ${e.lignes.length===3?'ok':'non'}">${e.lignes.length} tâche(s) sur 3</div></div>`:""}
+  </div>`;
+}
+function ligneTache(txt,ix,coche,num,onTog,onNum){
+  const html = esc(txt).replace("{n}",`<input type="number" min="1" class="nb" value="${esc(num||"")}"
+    onclick="event.stopPropagation()" oninput="${onNum}" placeholder="__">`);
+  return `<label class="ligne ${coche?'coche':''}">
+    <input type="checkbox" ${coche?'checked':''} onchange="${onTog}">
+    <span class="txt">${html}</span></label>`;
+}
+function choisirExp(i,v){ S.exp[i].type=v; S.exp[i].lignes=[]; S.exp[i].nums={};
+  if(EXPERIENCES[v]&&EXPERIENCES[v].org&&!S.exp[i].org) S.exp[i].org=EXPERIENCES[v].org; rendre(); }
+function basculeTache(i,ix){ bascule(S.exp[i].lignes,ix,3); }
+function majNum(i,ix,v){ S.exp[i].nums[ix]=v.replace(/\D/g,""); rendreLeger(); }
+
+function vImp(){
+  const p=S.imp, src=IMPLICATIONS[p.type];
+  const liste=Object.keys(IMPLICATIONS).map(k=>({v:k,l:IMPLICATIONS[k].titre}));
+  if(p.aucune) return `
+<div class="avis"><strong>Aucune implication déclarée</strong>
+Ton CV s'appuie alors seulement sur tes expériences : il t'en faut deux à l'étape 4.</div>
+<label class="case coche"><input type="checkbox" checked onchange="S.imp.aucune=false;rendre()">
+Je n'ai aucune implication à inscrire</label>`;
+  return `
+<div class="avis"><strong>Ça compte plus que tu penses</strong>
+Un employeur qui hésite entre deux stagiaires prend celui qui a déjà tenu un engagement bénévole.</div>
+<div class="bloc"><h3>Ton implication</h3>
+  <div class="champ"><label>Type</label>
+    <select onchange="S.imp.type=this.value;S.imp.lignes=[];S.imp.nums={};rendre()">${opts(liste,p.type,"— Choisir —")}</select></div>
+  ${src?`
+  <div class="champ"><label>Organisme, école ou équipe</label>
+    <input type="text" value="${esc(p.org)}" oninput="S.imp.org=this.value;rendreLeger()"></div>
+  <div class="champ"><label>Année</label>
+    <select onchange="S.imp.annee=this.value;rendre()">${opts(annees(),p.annee,"— Choisir —")}</select></div>
+  <div class="champ"><label>Choisis au moins 2 tâches</label>
+    <div class="lignes">${src.lignes.map((l,ix)=>ligneTache(l,ix,p.lignes.includes(ix),p.nums[ix],
+      `bascule(S.imp.lignes,${ix},4)`,`S.imp.nums[${ix}]=this.value.replace(/\\D/g,'');rendreLeger()`)).join("")}</div>
+    <div class="compteur ${p.lignes.length>=2?'ok':'non'}">${p.lignes.length} tâche(s) sur 2 minimum</div></div>`:""}
+</div>
+<label class="case"><input type="checkbox" onchange="S.imp.aucune=true;rendre()">
+Je n'ai aucune implication à inscrire</label>`;
+}
+
+function vComp(){
+  const d=DOMAINES[S.obj.domaine], q=S.comp.qualites;
+  return `
+<div class="avis"><strong>La règle de l'anecdote</strong>
+Pour chaque qualité que tu coches, tu dois pouvoir raconter une fois où tu l'as montrée.
+Si tu ne trouves pas d'histoire, décoche.</div>
+
+<div class="champ"><label>Tes qualités — entre 4 et 8</label>
+  <div class="cases">${QUALITES.map(x=>`<label class="case ${q.includes(x)?'coche':''}">
+    <input type="checkbox" ${q.includes(x)?'checked':''} onchange="bascule(S.comp.qualites,'${jq(x)}',8)">${esc(x)}</label>`).join("")}</div>
+  <div class="compteur ${q.length>=4&&q.length<=8?'ok':'non'}">${q.length} qualité(s) — il en faut de 4 à 8</div></div>
+
+${d?`<div class="champ"><label>Compétences liées à ${esc(d.nom.toLowerCase())} — au moins 2</label>
+  <p class="aide">Seulement ce que tu sais déjà faire, même sommairement.</p>
+  <div class="cases">${d.comp.map(x=>`<label class="case ${S.comp.competences.includes(x)?'coche':''}">
+    <input type="checkbox" ${S.comp.competences.includes(x)?'checked':''} onchange="bascule(S.comp.competences,'${jq(x)}',5)">${esc(x)}</label>`).join("")}</div>
+  <div class="compteur ${S.comp.competences.length>=2?'ok':'non'}">${S.comp.competences.length} compétence(s) sur 2 minimum</div></div>`
+  :`<div class="avis">Choisis d'abord ton domaine à l'étape 2 pour voir les compétences.</div>`}`;
+}
+
+function vAtouts(){ const a=S.atouts; const niv=["fonctionnel","intermédiaire","avancé","langue maternelle"];
+  return `
+<div class="champ"><label>Ton niveau d'anglais</label>
+  <select onchange="majF('atouts.anglais',this.value)">${opts(niv,a.anglais,"— Choisir —")}</select></div>
+
+<div class="duo">
+  <div class="champ"><label>Autre langue (facultatif)</label>
+    <input type="text" value="${esc(a.autreLangue)}" oninput="S.atouts.autreLangue=this.value;rendreLeger()"></div>
+  <div class="champ"><label>Niveau</label>
+    <select onchange="S.atouts.niveauAutre=this.value;rendreLeger()">${opts(niv,a.niveauAutre,"— Choisir —")}</select></div>
+</div>
+
+<div class="champ"><label>Tes disponibilités pour le stage</label>
+  <p class="aide">L'employeur en a besoin avant de pouvoir dire oui. C'est l'information la plus souvent oubliée.</p>
+  <div class="cases">${JOURS.map(j=>`<label class="case ${a.jours.includes(j)?'coche':''}">
+    <input type="checkbox" ${a.jours.includes(j)?'checked':''} onchange="bascule(S.atouts.jours,'${j}')">${j}</label>`).join("")}</div></div>
+
+<div class="champ"><label>Intérêts (facultatif, maximum 4)</label>
+  <div class="cases">${INTERETS.map(x=>`<label class="case ${a.interets.includes(x)?'coche':''}">
+    <input type="checkbox" ${a.interets.includes(x)?'checked':''} onchange="bascule(S.atouts.interets,'${jq(x)}',4)">${esc(x)}</label>`).join("")}</div></div>`;
+}
+
+function vRefs(){ return `
+<div class="avis"><strong>Deux règles, aucune exception</strong>
+Jamais un membre de ta famille. Et tu appelles la personne <em>avant</em> d'écrire son nom :
+une référence surprise par l'appel de l'employeur fait plus de tort que pas de référence du tout.</div>
+${S.refs.map((r,i)=>`<div class="bloc"><h3>Référence ${i+1}</h3>
+  <div class="duo">
+    <div class="champ"><label>Prénom</label>
+      <input type="text" value="${esc(r.prenom)}" oninput="S.refs[${i}].prenom=this.value;rendreLeger()"></div>
+    <div class="champ"><label>Nom</label>
+      <input type="text" value="${esc(r.nom)}" oninput="S.refs[${i}].nom=this.value;rendreLeger()"></div>
+  </div>
+  <div class="champ"><label>Ton lien avec cette personne</label>
+    <select onchange="S.refs[${i}].lien=this.value;rendre()">${opts(LIENS_REF,r.lien,"— Choisir —")}</select></div>
+  <div class="champ"><label>Téléphone</label>
+    <div class="trio">
+      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel1)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel1=this.value.replace(/\\D/g,'');rendreLeger()">
+      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel2)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel2=this.value.replace(/\\D/g,'');rendreLeger()">
+      <input type="tel" inputmode="numeric" maxlength="4" value="${esc(r.tel3)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel3=this.value.replace(/\\D/g,'');rendreLeger()">
+    </div>
+    <label class="case ${r.telInconnu?'coche':''}" style="margin-top:8px">
+      <input type="checkbox" ${r.telInconnu?'checked':''} onchange="S.refs[${i}].telInconnu=this.checked;rendre()">
+      Je ne l'ai pas encore — je continue et je reviens</label>
+    ${r.telInconnu?`<div class="compteur non">Tu peux avancer, mais le PDF et le Word resteront bloqués tant que ce numéro manque.</div>`:""}
+  </div>
+  <label class="case ${r.prevenue?'coche':''}">
+    <input type="checkbox" ${r.prevenue?'checked':''} onchange="S.refs[${i}].prevenue=this.checked;rendre()">
+    J'ai demandé la permission à cette personne</label>
+</div>`).join("")}`;
+}
+
+/* =====================================================================
+   DONNÉES DU CV (partagées par l'aperçu, le PDF et le Word)
+   ===================================================================== */
+function txtTache(src,ix,nums){
+  const t=src.lignes[ix];
+  return t.replace("{n}", nums[ix]||"___");
+}
+function periode(e){
+  const d=(e.moisD?e.moisD.charAt(0).toUpperCase()+e.moisD.slice(1)+" ":"")+e.anD;
+  if(e.encours) return d+" – aujourd'hui";
+  if(e.anF&&e.anF!==e.anD) return d+" – "+e.anF;
+  return d;
+}
+function cvData(){
+  const c=S.coord, a=S.atouts;
+  const ville = c.ville==="Autre" ? c.villeAutre : c.ville;
+  const tel = c.tel1&&c.tel2&&c.tel3 ? c.tel1+" "+c.tel2+"-"+c.tel3 : "";
+  const langues=[];
+  langues.push("français (langue maternelle)");
+  if(a.anglais) langues.push("anglais ("+a.anglais+")");
+  if(a.autreLangue&&a.niveauAutre) langues.push(a.autreLangue.toLowerCase()+" ("+a.niveauAutre+")");
+
+  const exps = S.exp.filter(e=>e.type).map(e=>({
+    titre:EXPERIENCES[e.type].titre, org:e.org, per:periode(e),
+    taches:e.lignes.slice().sort((x,y)=>x-y).map(ix=>txtTache(EXPERIENCES[e.type],ix,e.nums))}));
+
+  const imp = (!S.imp.aucune && S.imp.type) ? {
+    titre:IMPLICATIONS[S.imp.type].titre, org:S.imp.org, per:S.imp.annee,
+    taches:S.imp.lignes.slice().sort((x,y)=>x-y).map(ix=>txtTache(IMPLICATIONS[S.imp.type],ix,S.imp.nums))} : null;
+
+  return {
+    nom:((c.prenom+" "+c.nom).trim()).toUpperCase(),
+    contact:[ville,tel,c.courriel].filter(Boolean).join("  ·  "),
+    objectif:texteObjectif(),
+    ecole:S.form.ecole, dep:depVise(),
+    cartesForm:S.form.cartes, exps, imp,
+    qualites:S.comp.qualites, competences:S.comp.competences,
+    langues, cartes:a.cartes, jours:a.jours, interets:a.interets,
+    refs:S.refs.filter(r=>r.prenom||r.nom).map(r=>({
+      nom:(r.prenom+" "+r.nom).trim(), lien:r.lien,
+      tel:r.telInconnu?"":(r.tel1+" "+r.tel2+"-"+r.tel3), prevenue:r.prevenue}))
+  };
+}
+
+function rendreApercu(){
+  const d=cvData(), f=$("#feuille");
+  const vide = t => '<span class="vide">'+t+'</span>';
+  let h = '<p class="nom">'+(d.nom||vide("TON NOM"))+'</p>';
+  h += '<p class="coord">'+(d.contact||vide("ville · téléphone · courriel"))+'</p>';
+
+  if(d.objectif){ h+='<h5>Objectif</h5><p>'+esc(d.objectif)+'</p>'; }
+
+  h += '<h5>Formation</h5><div class="entree"><div class="tete"><span>'+
+       esc(CONFIG.NOM_COURS)+' (pré-DEP)</span><span>'+CONFIG.ANNEE_DEBUT+' – '+CONFIG.ANNEE_FIN+'</span></div>'+
+       '<div class="sous">'+(d.ecole?esc(d.ecole):vide("[ton école]"))+'</div>'+
+       (d.dep?'<div>DEP visé : '+esc(d.dep)+'</div>':'')+'</div>';
+  if(d.cartesForm.length) h+='<div class="entree">'+d.cartesForm.map(esc).join('<br>')+'</div>';
+
+  if(d.exps.length){
+    h+='<h5>Expérience</h5>';
+    d.exps.forEach(e=>{ h+='<div class="entree"><div class="tete"><span>'+esc(e.titre)+
+      (e.org?' — '+esc(e.org):'')+'</span><span>'+esc(e.per)+'</span></div><ul>'+
+      e.taches.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>'; });
+  }
+  if(d.imp){
+    h+='<h5>Implication</h5><div class="entree"><div class="tete"><span>'+esc(d.imp.titre)+
+      (d.imp.org?' — '+esc(d.imp.org):'')+'</span><span>'+esc(d.imp.per)+'</span></div><ul>'+
+      d.imp.taches.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>';
+  }
+  if(d.qualites.length||d.competences.length){
+    h+='<h5>Compétences et qualités</h5>';
+    if(d.qualites.length) h+='<p>'+d.qualites.map(esc).join('  ·  ')+'</p>';
+    if(d.competences.length) h+='<ul>'+d.competences.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>';
+  }
+  const atoutsLignes=[];
+  if(d.langues.length) atoutsLignes.push("Langues : "+d.langues.join(", "));
+  if(d.jours.length)   atoutsLignes.push("Disponibilités : "+d.jours.join(", "));
+  if(d.interets.length)atoutsLignes.push("Intérêts : "+d.interets.join(", "));
+  if(atoutsLignes.length) h+='<h5>Atouts</h5>'+atoutsLignes.map(l=>'<p>'+esc(l)+'</p>').join('');
+
+  if(d.refs.length){
+    h+='<h5>Références</h5>';
+    d.refs.forEach(r=>{ h+='<div class="entree"><p><b>'+esc(r.nom)+'</b>'+(r.lien?' — '+esc(r.lien):'')+'</p>'+
+      '<p>'+(r.tel?esc(r.tel):vide("téléphone à venir"))+(r.prevenue?'  ·  Personne prévenue':'')+'</p></div>'; });
+  }
+  f.innerHTML=h;
+}
+
+/* =====================================================================
+   ÉTAPE 9 — grille et sorties
+   ===================================================================== */
+function grille(){
+  const c=S.coord, d=cvData(), a=S.atouts;
+  const nbEntrees = S.exp.filter(e=>e.type).length + (d.imp?1:0);
+  return [
+    ["Prénom, nom et ville inscrits", !!(c.prenom.trim()&&c.nom.trim()&&(c.ville==="Autre"?c.villeAutre.trim():c.ville))],
+    ["Téléphone à 10 chiffres", /^\d{3}$/.test(c.tel1)&&/^\d{3}$/.test(c.tel2)&&/^\d{4}$/.test(c.tel3)],
+    ["Adresse courriel professionnelle", courrielOk(c.courriel)],
+    ["Aucune information interdite (photo, âge, date de naissance, statut civil, NAS)", true],
+    ["Objectif complet, avec le métier et le DEP visé", !!d.objectif],
+    ["Formation inscrite avec le nom de l'école", !!S.form.ecole.trim()],
+    ["Au moins 2 entrées entre Expérience et Implication", nbEntrees>=2],
+    ["Exactement 3 tâches par expérience", S.exp.length>0&&S.exp.every(e=>e.lignes.length===3)],
+    ["Tous les nombres des tâches sont remplis", S.exp.every(numsOk)],
+    ["Entre 4 et 8 qualités choisies", S.comp.qualites.length>=4&&S.comp.qualites.length<=8],
+    ["Disponibilités indiquées", a.jours.length>=1],
+    ["2 références hors famille, prévenues, avec téléphone",
+      S.refs.length===2&&S.refs.every(r=>r.prenom.trim()&&r.nom.trim()&&r.lien&&r.prevenue&&!r.telInconnu)]
+  ];
+}
+function vVerif(){
+  const g=grille(), ok=g.every(x=>x[1]), n=g.filter(x=>x[1]).length;
+  return `
+<div class="avis"><strong>${ok?"Tout est vert. Ton CV est prêt.":"Il reste "+(12-n)+" point(s) à régler."}</strong>
+${ok?"Relis-le une dernière fois à voix haute avant d'exporter : c'est là qu'on entend les fautes."
+   :"Clique sur une ligne rouge pour revenir à l'étape concernée."}</div>
+
+<ul class="grille">${g.map((x,i)=>`<li class="${x[1]?'ok':''}" onclick="allerA(${pointVersEtape(i)})">
+  <b>${x[1]?'✓':'✗'}</b><span>${esc(x[0])}</span></li>`).join("")}</ul>
+
+<div class="bloc" style="margin-top:20px"><h3>Sortir ton CV</h3>
+  ${ok?"":'<p class="aide" style="color:#B3302A;font-weight:600">Les deux boutons se débloquent quand les 12 points sont verts.</p>'}
+  <div class="sorties">
+    <div class="sortie"><h4>PDF</h4>
+      <p>C'est ce que tu donnes aux employeurs. Une page, s'ouvre partout, rien ne bouge.</p>
+      <button class="btn" ${ok?"":"disabled"} onclick="window.print()">Imprimer ou enregistrer en PDF</button></div>
+    <div class="sortie"><h4>Word</h4>
+      <p>Un vrai fichier .docx, pour adapter ton CV à un employeur plus tard.</p>
+      <button class="btn" ${ok?"":"disabled"} onclick="exportWord()">Télécharger le .docx</button></div>
+  </div>
+  <p class="aide" style="margin-top:14px">Dans la fenêtre d'impression, choisis <b>Destination → Enregistrer en PDF</b>.</p>
+</div>
+
+<div class="bloc"><h3>Avant de quitter le local</h3>
+  <p class="aide">Ton travail est sauvegardé dans ce navigateur, sur cet ordinateur seulement. Prends ton code.</p>
+  <button class="btn sec" onclick="ouvrirCode()">🔑 Ouvrir mon code de reprise</button></div>`;
+}
+function pointVersEtape(i){ return [0,0,0,0,1,2,3,3,3,5,6,7][i]; }
+
+/* =====================================================================
+   EXPORT WORD (.docx véritable, écrit à la main)
+   ===================================================================== */
+const CRC = (()=>{const t=new Uint32Array(256);
+  for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=(c&1)?(0xEDB88320^(c>>>1)):(c>>>1);t[n]=c>>>0}return t})();
+function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&0xFF]^(c>>>8);return (c^0xFFFFFFFF)>>>0}
+
+function zip(files){
+  const enc=new TextEncoder(), locales=[], centraux=[]; let off=0, n=0;
+  for(const f of files){
+    const nb=enc.encode(f.n), data=enc.encode(f.d), crc=crc32(data), sz=data.length;
+    const lh=new DataView(new ArrayBuffer(30));
+    lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true);
+    lh.setUint32(14,crc,true); lh.setUint32(18,sz,true); lh.setUint32(22,sz,true);
+    lh.setUint16(26,nb.length,true);
+    locales.push(new Uint8Array(lh.buffer),nb,data);
+    const ch=new DataView(new ArrayBuffer(46));
+    ch.setUint32(0,0x02014b50,true); ch.setUint16(4,20,true); ch.setUint16(6,20,true); ch.setUint16(8,0x0800,true);
+    ch.setUint32(16,crc,true); ch.setUint32(20,sz,true); ch.setUint32(24,sz,true);
+    ch.setUint16(28,nb.length,true); ch.setUint32(42,off,true);
+    centraux.push(new Uint8Array(ch.buffer),nb);
+    off += 30+nb.length+sz; n++;
+  }
+  const tailleC = centraux.reduce((s,x)=>s+x.length,0);
+  const eo=new DataView(new ArrayBuffer(22));
+  eo.setUint32(0,0x06054b50,true); eo.setUint16(8,n,true); eo.setUint16(10,n,true);
+  eo.setUint32(12,tailleC,true); eo.setUint32(16,off,true);
+  return new Blob([...locales,...centraux,new Uint8Array(eo.buffer)],
+    {type:"application/vnd.openxmlformats-officedocument.wordprocessingml.document"});
+}
+
+const X = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
+function wP(runs,pr){ return '<w:p>'+(pr||'')+runs+'</w:p>'; }
+function wR(t,o){o=o||{}; return '<w:r><w:rPr>'+(o.b?'<w:b/>':'')+(o.i?'<w:i/>':'')+
+  (o.sz?'<w:sz w:val="'+o.sz+'"/><w:szCs w:val="'+o.sz+'"/>':'')+
+  (o.caps?'<w:caps/><w:spacing w:val="20"/>':'')+'</w:rPr><w:t xml:space="preserve">'+X(t)+'</w:t></w:r>'; }
+function wTitreSection(t){
+  return wP(wR(t,{b:1,caps:1}),
+    '<w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>'+
+    '<w:spacing w:before="200" w:after="60"/></w:pPr>');
+}
+function wTete(g,d){
+  return wP(wR(g,{b:1})+'<w:r><w:tab/></w:r>'+wR(d,{}),
+    '<w:pPr><w:tabs><w:tab w:val="right" w:pos="10080"/></w:tabs><w:spacing w:before="80" w:after="0"/></w:pPr>');
+}
+function wLigne(t,o){ return wP(wR(t,o||{}),'<w:pPr><w:spacing w:after="0"/></w:pPr>'); }
+function wPuce(t){ return wP(wR("• "+t),
+  '<w:pPr><w:ind w:left="284" w:hanging="170"/><w:spacing w:after="0"/></w:pPr>'); }
+
+function docXml(){
+  const d=cvData(); let b="";
+  b += wP(wR(d.nom,{b:1,sz:34}),'<w:pPr><w:spacing w:after="20"/></w:pPr>');
+  b += wLigne(d.contact);
+  if(d.objectif){ b+=wTitreSection("Objectif"); b+=wLigne(d.objectif); }
+  b += wTitreSection("Formation");
+  b += wTete(CONFIG.NOM_COURS+" (pré-DEP)", CONFIG.ANNEE_DEBUT+" – "+CONFIG.ANNEE_FIN);
+  b += wLigne(d.ecole,{i:1});
+  if(d.dep) b += wLigne("DEP visé : "+d.dep);
+  d.cartesForm.forEach(c=>{ b+=wLigne(c); });
+  if(d.exps.length){ b+=wTitreSection("Expérience");
+    d.exps.forEach(e=>{ b+=wTete(e.titre+(e.org?" — "+e.org:""), e.per);
+      e.taches.forEach(t=>{ b+=wPuce(t); }); }); }
+  if(d.imp){ b+=wTitreSection("Implication");
+    b+=wTete(d.imp.titre+(d.imp.org?" — "+d.imp.org:""), d.imp.per);
+    d.imp.taches.forEach(t=>{ b+=wPuce(t); }); }
+  if(d.qualites.length||d.competences.length){ b+=wTitreSection("Compétences et qualités");
+    if(d.qualites.length) b+=wLigne(d.qualites.join("  ·  "));
+    d.competences.forEach(c=>{ b+=wPuce(c); }); }
+  const at=[];
+  if(d.langues.length) at.push("Langues : "+d.langues.join(", "));
+  if(d.jours.length)   at.push("Disponibilités : "+d.jours.join(", "));
+  if(d.interets.length)at.push("Intérêts : "+d.interets.join(", "));
+  if(at.length){ b+=wTitreSection("Atouts"); at.forEach(l=>{ b+=wLigne(l); }); }
+  if(d.refs.length){ b+=wTitreSection("Références");
+    d.refs.forEach(r=>{ b+=wLigne(r.nom+(r.lien?" — "+r.lien:""),{b:1});
+      b+=wLigne(r.tel+(r.prevenue?"  ·  Personne prévenue":"")); }); }
+
+  return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+b+
+    '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/>'+
+    '<w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/>'+
+    '</w:sectPr></w:body></w:document>';
+}
+function exportWord(){
+  const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults>'+
+    '<w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+
+    '<w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="fr-CA"/></w:rPr></w:rPrDefault>'+
+    '<w:pPrDefault><w:pPr><w:spacing w:after="60" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault>'+
+    '</w:docDefaults></w:styles>';
+  const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">'+
+    '<Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>'+
+    '<Default Extension="xml" ContentType="application/xml"/>'+
+    '<Override PartName="/word/document.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"/>'+
+    '<Override PartName="/word/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"/>'+
+    '</Types>';
+  const rels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="word/document.xml"/>'+
+    '</Relationships>';
+  const drels='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
+    '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
+    '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
+    '</Relationships>';
+  const blob = zip([
+    {n:"[Content_Types].xml",d:ct},
+    {n:"_rels/.rels",d:rels},
+    {n:"word/document.xml",d:docXml()},
+    {n:"word/_rels/document.xml.rels",d:drels},
+    {n:"word/styles.xml",d:styles}]);
+  telecharger(blob, "CV - "+(S.coord.prenom+" "+S.coord.nom).trim()+".docx");
+}
+function telecharger(blob,nom){
+  const u=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=u; a.download=nom; document.body.appendChild(a); a.click();
+  setTimeout(()=>{URL.revokeObjectURL(u);a.remove()},600);
+}
+
+/* =====================================================================
+   CODE DE REPRISE / SAUVEGARDE
+   ===================================================================== */
+const CLE="cv_pmt_rigide_v2";
+function sauver(){ try{ localStorage.setItem(CLE, JSON.stringify(S)); }catch(e){} }
+function charger(){
+  try{ const t=localStorage.getItem(CLE); if(t){ S=Object.assign(VIDE(),JSON.parse(t)); return true; } }catch(e){}
+  return false;
+}
+function b64(str){
+  const u=new TextEncoder().encode(str); let s="";
+  for(let i=0;i<u.length;i+=4096) s+=String.fromCharCode.apply(null,u.subarray(i,i+4096));
+  return btoa(s);
+}
+function deb64(str){
+  const bin=atob(str), u=new Uint8Array(bin.length);
+  for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+  return new TextDecoder().decode(u);
+}
+function monCode(){ return "CV3"+b64(JSON.stringify(S)); }
+
+function ouvrirCode(){
+  const c=monCode(), mail=S.coord.courriel;
+  $("#modale").innerHTML = `
+<h3>Ton code de reprise</h3>
+<p class="aide">Ton CV est sauvegardé dans <b>ce navigateur, sur cet ordinateur seulement</b>. Si tu changes de poste,
+ce code est la seule chose qui te rend ton travail. Prends-le avant de quitter le local.</p>
+<textarea id="zone-code" readonly onclick="this.select()">${esc(c)}</textarea>
+<p class="aide">${c.length} caractères. Il doit être copié au complet, en commençant par CV3.</p>
+<div style="display:flex;gap:9px;flex-wrap:wrap;margin:14px 0 20px">
+  <button class="btn" onclick="copierCode()">Copier le code</button>
+  ${mail?`<button class="btn sec" onclick="envoyerCode()">Me l'envoyer par courriel</button>`:""}
+  <button class="btn sec" onclick="telecharger(new Blob([monCode()],{type:'text/plain'}),'mon-cv-code.txt')">Télécharger un fichier</button>
+</div>
+<h3 style="font-size:16px">Reprendre un code</h3>
+<p class="aide">Colle ici le code d'une période précédente. Ton travail actuel sera remplacé.</p>
+<textarea id="zone-reprise" placeholder="CV3..."></textarea>
+<div style="display:flex;gap:9px;margin-top:12px">
+  <button class="btn" onclick="reprendre()">Reprendre ce code</button>
+  <button class="btn sec" onclick="fermerModale()">Fermer</button>
+</div>
+<p id="msg-code" style="margin-top:10px;font-weight:600"></p>`;
+  $("#voile").classList.add("on");
+}
+function copierCode(){
+  const z=$("#zone-code"); z.select();
+  try{ document.execCommand("copy"); $("#msg-code").textContent="Code copié. Colle-le tout de suite quelque part."; }
+  catch(e){ $("#msg-code").textContent="Copie manuelle : sélectionne le texte, puis Ctrl+C."; }
+}
+function envoyerCode(){
+  const suj="Mon code de CV — "+CONFIG.NOM_COURS;
+  const corps="Garde ce courriel.\n\nÀ la prochaine période, ouvre le fichier du CV, clique sur "+
+    "« Mon code de reprise », colle le code ci-dessous dans la case du bas et clique sur Reprendre.\n\n"+monCode();
+  location.href="mailto:"+encodeURIComponent(S.coord.courriel)+"?subject="+encodeURIComponent(suj)+
+    "&body="+encodeURIComponent(corps);
+}
+function reprendre(){
+  const v=$("#zone-reprise").value.trim();
+  if(!v.startsWith("CV3")){ $("#msg-code").textContent="Ce code ne commence pas par CV3. Il est incomplet ou ce n'est pas un code."; return; }
+  try{
+    const o=JSON.parse(deb64(v.slice(3)));
+    S=Object.assign(VIDE(),o); etape=0; fermerModale(); rendre();
+  }catch(e){ $("#msg-code").textContent="Le code est tronqué. Recopie-le au complet, du début à la fin."; }
+}
+function fermerModale(){ $("#voile").classList.remove("on"); }
+function toutEffacer(){
+  if(!confirm("Tout effacer et recommencer ? C'est irréversible. Si tu n'as pas ton code de reprise, tout est perdu."))return;
+  S=VIDE(); etape=0; sauver(); rendre();
+}
+
+/* =====================================================================
+   NAVIGATION ET RENDU GLOBAL
+   ===================================================================== */
+function rendreRail(){
+  $("#etapes").innerHTML = ETAPES.map((e,i)=>{
+    const ok=valide(i), acc=accessible(i);
+    return `<li class="etape ${i===etape?'active':''} ${ok&&i!==etape?'fait':''} ${acc?'':'verrou'}"
+      onclick="allerA(${i})"><span class="num">${ok&&i!==etape?'✓':i+1}</span><span class="lib">${e.t}</span></li>`;
+  }).join("");
+  let n=0; for(let i=0;i<9;i++) if(valide(i)) n++;
+  $("#jauge-plein").style.width = Math.round(n/9*100)+"%";
+  $("#jauge-txt").textContent = n+" étape"+(n>1?"s":"")+" sur 9";
+}
+function majBarre(){
+  const ok=valide(etape), b=blocage(etape);
+  $("#btn-prec").style.visibility = etape===0?"hidden":"visible";
+  const suiv=$("#btn-suiv");
+  suiv.disabled = !ok || etape===8;
+  suiv.textContent = etape===7 ? "Vérifier mon CV" : "Continuer";
+  suiv.style.visibility = etape===8 ? "hidden" : "visible";
+  const et=$("#etat");
+  et.className = "etat "+(ok?"ok":"bloque");
+  et.textContent = ok ? (etape===8?"Ton CV est prêt.":"Étape complète.") : b;
+}
+function rendreLeger(){ rendreRail(); rendreApercu(); majBarre(); sauver(); }
+function rendre(){ rendreEtape(); rendreLeger(); }
+function majF(chemin,val){ const p=chemin.split("."); let o=S;
+  for(let i=0;i<p.length-1;i++) o=o[p[i]]; o[p[p.length-1]]=val; rendre(); }
+
+function allerA(i){
+  if(i===etape) return;
+  if(!accessible(i)){
+    const k=[0,1,2,3,4,5,6,7,8].find(x=>!valide(x));
+    etape=k; rendre();
+    $("#etat").textContent="Termine cette étape avant de passer à la suivante.";
+    return;
+  }
+  etape=i; $("#centre").scrollTop=0; $("#rail").classList.remove("on"); rendre();
+}
+function allerSuiv(){ if(valide(etape)&&etape<8) allerA(etape+1); }
+function allerPrec(){ if(etape>0){ etape--; $("#centre").scrollTop=0; rendre(); } }
+
+/* bouton menu sur petit écran */
+(function(){
+  const st=document.createElement("style");
+  st.textContent=".menu-btn{display:none}@media(max-width:760px){.menu-btn{display:inline-block}}";
+  document.head.appendChild(st);
+  const b=document.createElement("button");
+  b.className="btn sec menu-btn"; b.textContent="☰ Étapes";
+  b.onclick=()=>$("#rail").classList.toggle("on");
+  document.querySelector(".barre").prepend(b);
+})();
+
+
+/* Poste partagé : le CV enregistré n'appartient pas forcément à l'élève assis devant. */
+function banniereReprise(){
+  const nom=(S.coord.prenom+" "+S.coord.nom).trim();
+  if(!nom) return;
+  const d=document.createElement("div");
+  d.className="banniere";
+  d.innerHTML='<span>Ce navigateur a gardé le CV de <b>'+esc(nom)+'</b>.</span>';
+  const oui=document.createElement("button"); oui.className="btn sec"; oui.textContent="C'est moi, je continue";
+  const non=document.createElement("button"); non.className="btn sec"; non.textContent="Ce n'est pas moi";
+  oui.onclick=()=>d.remove();
+  non.onclick=()=>{
+    if(!confirm("Commencer un CV vide ? Le travail affiché sera effacé de cet ordinateur. Si c'est le tien, prends d'abord ton code de reprise."))return;
+    S=VIDE(); S.exp.push(nouvelleExp()); etape=0; sauver(); d.remove(); rendre();
+  };
+  d.appendChild(oui); d.appendChild(non);
+  document.querySelector("#centre").prepend(d);
+}
+
+/* ---------- démarrage ---------- */
+if(CONFIG.NOM_ECOLE) $("#marque-cours").textContent = CONFIG.NOM_ECOLE;
+charger();
+if(!S.exp.length) S.exp.push(nouvelleExp());
+rendre();
+banniereReprise();
+document.addEventListener("keydown",e=>{ if(e.key==="Escape") fermerModale(); });
+</script>
+</body>
+</html>
