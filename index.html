@@ -9,6 +9,7 @@
   --encre:#1B2430; --acier:#5A6B7E; --trait:#C7CED6; --fond:#E9ECEF; --panneau:#FFFFFF;
   --jaune:#F2B705; --jaune-pale:#FFF3CE; --vert:#237A4B; --vert-pale:#E2F2E8;
   --rouge:#B3302A; --rouge-pale:#FBE7E5;
+  --ech: 1; --air: 1;
   --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --doc: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
@@ -119,19 +120,33 @@ input,select{font-family:inherit;font-size:inherit}
 
 .apercu h4{margin:0 0 12px;font-size:12.5px;color:#5A6B7E;font-weight:600}
 .apercu h4.second{margin-top:22px}
-.feuille{background:#fff;box-shadow:0 2px 12px rgba(27,36,48,.16);padding:44px 42px;
-  font-family:var(--doc);font-size:9.6pt;line-height:1.34;color:#000;min-height:420px}
-.feuille .nom{font-size:17pt;font-weight:700;letter-spacing:.5px;margin:0 0 3px}
-.feuille .coord{font-size:9.4pt;margin:0 0 16px;color:#222}
-.feuille h5{font-size:9.6pt;font-weight:700;letter-spacing:1.1px;margin:13px 0 5px;
-  padding-bottom:2px;border-bottom:1px solid #000;text-transform:uppercase}
-.feuille .entree{margin-bottom:9px}
-.feuille .tete{display:flex;justify-content:space-between;gap:12px;font-weight:700}
+.feuille{background:#fff;box-shadow:0 2px 12px rgba(27,36,48,.16);padding:52px 54px;
+  font-family:var(--doc);font-size:calc(9.9pt * var(--ech));
+  line-height:calc(1.30 + .12 * var(--air));color:#000;min-height:420px}
+.feuille .nom{font-size:1.82em;font-weight:700;letter-spacing:.04em;margin:0 0 .22em}
+.feuille .coord{font-size:.97em;margin:0 0 calc(1.5em * var(--air));color:#222}
+/* Le titre de section appartient à ce qui le suit : beaucoup d'air au-dessus,
+   peu en dessous. C'est ce déséquilibre qui fait voir les blocs d'un coup d'oeil. */
+.feuille h5{font-size:1.06em;font-weight:700;letter-spacing:.15em;
+  margin:calc(1.85em * var(--air)) 0 calc(.55em * var(--air));
+  padding-bottom:.28em;border-bottom:1.5px solid #000;text-transform:uppercase}
+.feuille .entree{margin-bottom:calc(1em * var(--air))}
+.feuille .entree:last-child{margin-bottom:0}
+.feuille .tete{display:flex;justify-content:space-between;gap:1.2em;font-weight:700}
 .feuille .sous{font-style:italic;color:#222}
-.feuille ul{margin:3px 0 0;padding-left:15px}
-.feuille li{margin-bottom:1px}
+.feuille ul{margin:calc(.35em * var(--air)) 0 0;padding-left:1.45em}
+.feuille li{margin-bottom:calc(.18em * var(--air));padding-left:.12em}
 .feuille .vide{color:#B0B6BD;font-style:italic}
-.feuille p{margin:0 0 3px}
+.feuille p{margin:0 0 calc(.3em * var(--air))}
+/* sous-sections de COMPÉTENCES : étiquette en gras, contenu au fil du texte */
+.feuille .sous-sec{margin-top:calc(.4em * var(--air))}
+.feuille .sous-sec b{font-weight:700}
+
+/* page témoin, hors écran : sert à mesurer la hauteur réelle à l'impression */
+#mesure{position:fixed;left:-9999px;top:0;width:17.2cm;padding:0;min-height:0;
+  box-shadow:none;visibility:hidden;pointer-events:none}
+.etat-page{font-size:12px;margin-top:9px;color:var(--acier);display:flex;gap:6px;align-items:baseline}
+.etat-page.deborde{color:#8A6100;font-weight:600}
 
 .banniere{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--jaune-pale);
   border-bottom:2px solid var(--jaune);padding:13px 34px;font-size:14px}
@@ -160,10 +175,12 @@ input,select{font-family:inherit;font-size:inherit}
   .apercu{display:block!important}
   body *{visibility:hidden}
   body.pr-cv #feuille, body.pr-cv #feuille *{visibility:visible}
-  body.pr-cv #feuille{position:absolute;left:0;top:0;width:100%;box-shadow:none;padding:0;font-size:10pt}
+  body.pr-cv #feuille{position:absolute;left:0;top:0;width:100%;box-shadow:none;padding:0;
+    font-size:calc(9.9pt * var(--ech))}
   body.pr-ref #feuille-refs, body.pr-ref #feuille-refs *{visibility:visible}
   body.pr-ref #feuille-refs{position:absolute;left:0;top:0;width:100%;box-shadow:none;padding:0;font-size:10pt}
-  @page{margin:1.5cm}
+  #mesure{display:none!important}
+  @page{size:letter;margin:1.9cm}
 }
 @media screen and (max-width:1180px){
   .app{grid-template-columns:200px minmax(0,1fr)}
@@ -203,6 +220,7 @@ input,select{font-family:inherit;font-size:inherit}
   <aside class="apercu">
     <h4>Ton CV en direct</h4>
     <div class="feuille" id="feuille"></div>
+    <div class="etat-page" id="etat-page"></div>
     <h4 class="second">Ta liste de références — à apporter en entrevue, pas à joindre au CV</h4>
     <div class="feuille" id="feuille-refs"></div>
   </aside>
@@ -212,6 +230,7 @@ input,select{font-family:inherit;font-size:inherit}
   <div class="etat" id="etat"></div>
   <button class="btn" id="btn-suiv" onclick="allerSuiv()">Continuer</button>
 </div>
+<div class="feuille" id="mesure" aria-hidden="true"></div>
 <div class="voile" id="voile" onclick="if(event.target===this)fermerModale()">
   <div class="modale" id="modale"></div>
 </div>
@@ -224,8 +243,7 @@ input,select{font-family:inherit;font-size:inherit}
 
 const CONFIG = {
   NOM_COURS:           "Préparation au marché du travail",
-  NOM_ECOLE:           "École secondaire Jacques-Rousseau",
-  VILLE_ECOLE:         "Longueuil",
+  NOM_ECOLE:           "École Jacques-Rousseau",
   COURRIEL_ENSEIGNANT: "",
   ADRESSE_OUTIL:       "https://jplachance2.github.io/cv/",
   STAGE_DEBUT:         "novembre 2026",
@@ -429,13 +447,27 @@ const COMP_TRANSFERABLES = ["Service à la clientèle","Travail en équipe sur l
   "Encaissement et rendu de monnaie","Travail debout plusieurs heures"];
 const INFORMATIQUE = ["Word","Excel","PowerPoint","Google Docs","Canva","Photoshop","Outlook et courriel",
   "Gestion d'une page de réseau social"];
-const NIVEAUX_INFO = ["débutant","intermédiaire","avancé"];
 
 const LANGUES = ["français","anglais","espagnol","portugais","créole haïtien","arabe","mandarin",
   "vietnamien","roumain","russe","ukrainien","italien","autre"];
 const NIVEAUX_LANGUE = ["notions de base","fonctionnel à l'oral","fonctionnel à l'oral et à l'écrit",
   "intermédiaire","avancé"];
 
+/* Les 10 écoles secondaires du CSS Marie-Victorin (cssmv.gouv.qc.ca, septembre 2026).
+   Les écoles spécialisées et le pavillon en centre jeunesse n'y sont pas : un élève
+   qui les inscrirait révélerait son parcours à un employeur. « Autre » les couvre. */
+const ECOLES = [
+  {n:"École André-Laurendeau",                v:"Saint-Hubert"},
+  {n:"École Antoine-Brossard",                v:"Brossard"},
+  {n:"École de l'Agora",                      v:"Longueuil"},
+  {n:"École Gérard-Filion",                   v:"Longueuil"},
+  {n:"École Internationale Lucille-Teasdale", v:"Brossard"},
+  {n:"École Jacques-Rousseau",                v:"Longueuil"},
+  {n:"École Monseigneur-A.-M.-Parent",        v:"Longueuil"},
+  {n:"École Saint-Edmond",                    v:"Longueuil"},
+  {n:"École Saint-Jean-Baptiste",             v:"Longueuil"},
+  {n:"Autre école",                           v:""}
+];
 const CARTES = ["Hygiène et salubrité alimentaires (MAPAQ)","Secourisme général / RCR",
   "Santé et sécurité générale sur les chantiers (ASP)","SIMDUT","Permis de conduire classe 5",
   "Permis d'apprenti conducteur"];
@@ -455,30 +487,31 @@ const MOTIFS = [
   "afin de mettre en pratique ce que j'apprends et de valider mon choix de DEP"];
 
 const ETAPES = [
-  {id:"coord",  t:"Identification", i:"Ce que l'employeur lit en premier. Rien d'autre que ce qui sert à te joindre."},
+  {id:"coord",  t:"Identification", i:"La première chose que l'employeur lit. Donne-lui ce qu'il faut pour te rappeler."},
   {id:"obj",    t:"Objectif",       i:"Une phrase construite à partir de tes choix. Elle dit qui tu es, ce que tu cherches et où tu t'en vas."},
   {id:"form",   t:"Formation",      i:"À ton âge, c'est la section la plus forte du CV. Elle passe avant l'expérience."},
   {id:"exp",    t:"Expérience",     i:"Tu as déjà travaillé, même sans employeur. Gardiennage, gazon, déneigement, camp de jour : ça compte."},
   {id:"imp",    t:"Implication",    i:"Bénévolat, comité, équipe sportive. Ça montre que tu t'engages et que tu tiens parole."},
-  {id:"comp",   t:"Compétences",    i:"Ce que tu es, puis ce que tu sais faire. Coche seulement ce que tu peux prouver."},
+  {id:"comp",   t:"Compétences",    i:"Ce que tu es, ce que tu sais faire, et tes cartes. Coche ce que tu peux raconter."},
   {id:"atouts", t:"Renseignements", i:"Langues, informatique, disponibilités, centres d'intérêt."},
-  {id:"refs",   t:"Références",     i:"Deux personnes, jamais de la famille, prévenues avant que leur nom soit écrit."},
-  {id:"verif",  t:"Vérification",   i:"La grille passe ton CV au peigne fin. Tout doit être vert pour débloquer le PDF et le Word."}
+  {id:"refs",   t:"Références",     i:"Deux personnes qui t'ont vu travailler ou étudier. Tu les appelles avant."},
+  {id:"verif",  t:"Vérification",   i:"Passe la liste. Quand tout est vert, ton PDF et ton Word se débloquent."}
 ];
 
 /* =====================================================================
    ÉTAT
    ===================================================================== */
 const VIDE = () => ({
-  v:3,
+  v:4,
   coord:{prenom:"",nom:"",ville:"",villeAutre:"",tel1:"",tel2:"",tel3:"",courriel:""},
-  obj:{domaine:"",domaineAutre:"",metier:"",metierAutre:"",depAutre:"",motif:0},
-  form:{confirme:false,anD:"",anF:"",cartes:[],cartesAutres:[]},
+  obj:{domaine:"",domaineAutre:"",metier:"",metierAutre:"",depAutre:"",motif:0,entreprise:""},
+  form:{ecole:CONFIG.NOM_ECOLE,ecoleAutre:"",villeAutre:"",anD:"",anF:"",mentions:[]},
+  verif:{relu:false,defendable:false},
   exp:[nouvelleExp()],
   imp:{aucune:false,type:"",typeAutre:"",org:"",moisD:"",anD:"",moisF:"",anF:"",encours:false,
        lignes:[],nums:{},autres:[]},
-  comp:{qualites:[],competences:[],competencesAutres:[]},
-  atouts:{maternelle:"",maternelleAutre:"",langues:[],info:[],niveauInfo:"",interets:[],interetsAutres:[]},
+  comp:{qualites:[],competences:[],competencesAutres:[],cartes:[],cartesAutres:[]},
+  atouts:{maternelle:"",maternelleAutre:"",langues:[],info:[],infoAutres:[],interets:[],interetsAutres:[]},
   refs:[nouvelleRef(),nouvelleRef()]
 });
 function nouvelleRef(){return {prenom:"",nom:"",lien:"",lienAutre:"",precision:"",
@@ -589,7 +622,7 @@ function valide(i){
     case 0: return !!(!vide(c.prenom) && !vide(c.nom) && c.ville &&
              (c.ville!=="Autre" || !vide(c.villeAutre)) && telOk(c.tel1,c.tel2,c.tel3) && courrielOk(c.courriel));
     case 1: return objOk();
-    case 2: return !!(f.confirme && f.anD && f.anF && +f.anF>=+f.anD);
+    case 2: return !!(ecoleOk() && f.anD && f.anF && +f.anF>=+f.anD);
     case 3: return S.exp.length>=1 && S.exp.every(expOk);
     case 4: return impOk();
     case 5: return S.comp.qualites.length>=4 && S.comp.qualites.length<=8 &&
@@ -636,7 +669,9 @@ function blocage(i){
     if(vide(o.depAutre)&&(o.metier==="autre"||o.domaine==="autre")) return "Écris le DEP ou la formation que tu vises.";
   }
   if(i===2){
-    if(!f.confirme) return "Coche la case pour confirmer ton école.";
+    if(!f.ecole) return "Choisis ton école.";
+    if(f.ecole==="Autre école"&&!ecoleNom()) return "Écris le nom de ton école.";
+    if(f.ecole==="Autre école"&&!ecoleVille()) return "Écris la ville de ton école.";
     if(!f.anD||!f.anF) return "Choisis tes années de formation.";
     if(+f.anF<+f.anD) return "L'année de fin doit venir après l'année de début.";
   }
@@ -690,9 +725,9 @@ function rendreEtape(){
 }
 
 function vCoord(){ const c=S.coord; return `
-<div class="avis"><strong>Ce qui ne doit jamais apparaître sur ton CV</strong>
-Ni photo, ni âge, ni date de naissance, ni lieu de naissance, ni statut civil, ni numéro d'assurance sociale.
-Au Québec, un employeur n'a pas le droit de les exiger.</div>
+<div class="avis"><strong>Un CV québécois, c'est court</strong>
+Ton nom, ta ville, ton téléphone, ton courriel. Rien d'autre.
+Pas de photo, pas d'âge, pas de date de naissance : la loi te protège, un employeur n'a pas le droit de les exiger.</div>
 <div class="duo">
   <div class="champ"><label>Prénom</label>
     <input type="text" value="${esc(c.prenom)}" oninput="maj('coord.prenom',this.value)"></div>
@@ -700,19 +735,19 @@ Au Québec, un employeur n'a pas le droit de les exiger.</div>
     <input type="text" value="${esc(c.nom)}" oninput="maj('coord.nom',this.value)"></div>
 </div>
 <div class="champ"><label>Ville</label>
-  <p class="aide">La ville seulement. Pour un stage, ton adresse complète n'est pas nécessaire.</p>
+  <p class="aide">Ta ville suffit. L'employeur veut savoir si tu peux te rendre chez lui.</p>
   <select onchange="majF('coord.ville',this.value)">${opts(VILLES,c.ville,"— Choisir —")}</select></div>
 ${c.ville==="Autre"?`<div class="champ"><label>Nom de ta ville</label>
   <input type="text" value="${esc(c.villeAutre)}" oninput="maj('coord.villeAutre',this.value)"></div>`:""}
 <div class="champ"><label>Téléphone</label>
-  <p class="aide">Écoute ton message de boîte vocale aujourd'hui : s'il date du secondaire 1, refais-le.</p>
+  <p class="aide">Écoute ton message de boîte vocale aujourd'hui. Ton nom, une phrase claire : l'employeur laisse le sien.</p>
   <div class="trio">
     <input type="tel" inputmode="numeric" maxlength="3" placeholder="450" value="${esc(c.tel1)}" oninput="maj('coord.tel1',this.value.replace(/\\D/g,''))">
     <input type="tel" inputmode="numeric" maxlength="3" placeholder="555" value="${esc(c.tel2)}" oninput="maj('coord.tel2',this.value.replace(/\\D/g,''))">
     <input type="tel" inputmode="numeric" maxlength="4" placeholder="0142" value="${esc(c.tel3)}" oninput="maj('coord.tel3',this.value.replace(/\\D/g,''))">
   </div></div>
 <div class="champ"><label>Courriel</label>
-  <p class="aide">Le format qui passe : prenom.nom@… Une adresse comme bg_swag2009@… fait rejeter le CV avant qu'il soit lu.</p>
+  <p class="aide">Prends le format prenom.nom@… Deux minutes à créer, et ton CV se fait lire au complet.</p>
   <input type="email" value="${esc(c.courriel)}" oninput="maj('coord.courriel',this.value.trim())"></div>`;
 }
 
@@ -739,9 +774,21 @@ ${libre?`<div class="champ"><label>Écris le métier visé</label>
   <input type="text" value="${esc(o.depAutre)}" oninput="maj('obj.depAutre',this.value)"></div>`:""}
 ${objOk()?`<div class="champ"><label>Pourquoi ce stage</label>
   <select onchange="majF('obj.motif',+this.value)">${opts(MOTIFS.map((m,i)=>({v:i,l:m})),o.motif)}</select></div>
+<div class="champ"><label>Une entreprise en tête ? (facultatif)</label>
+  <p class="aide">Écris son nom : il s'ajoute à ta phrase, en gras. L'employeur voit tout de suite
+  que le CV est fait pour lui. Change-le avant chaque visite.</p>
+  <input type="text" value="${esc(o.entreprise)}" oninput="maj('obj.entreprise',this.value)"
+    placeholder="Ex. : Boulangerie Le Fournil"></div>
 <div class="bloc"><h3>Ton objectif de carrière</h3><p style="margin:0;font-size:14.5px">${esc(texteObjectif())}</p></div>`:""}`;
 }
 function choisirDomaine(v){ S.obj.domaine=v; S.obj.metier=""; S.comp.competences=[]; rendre(); }
+function ecoleNom(){ const f=S.form;
+  return f.ecole==="Autre école" ? f.ecoleAutre.trim() : f.ecole; }
+function ecoleVille(){ const f=S.form, e=ECOLES.find(x=>x.n===f.ecole);
+  return f.ecole==="Autre école" ? f.villeAutre.trim() : (e?e.v:""); }
+function ecoleTexte(){ const n=ecoleNom(), v=ecoleVille();
+  return n ? (v ? n+", "+v : n) : ""; }
+function ecoleOk(){ return !!ecoleNom() && !!ecoleVille(); }
 function metierVise(){ const o=S.obj;
   if(o.domaine==="autre"||o.metier==="autre") return o.metierAutre;
   return o.metier; }
@@ -754,7 +801,9 @@ function depCourt(){ const o=S.obj, d=DOMAINES[o.domaine];
   const m=d&&d.metiers.find(x=>x.m===o.metier); return m?m.dep:""; }
 function texteObjectif(){
   if(!objOk()) return "";
+  const ent=(S.obj.entreprise||"").trim();
   return "Élève en "+CONFIG.NOM_COURS+", je cherche un stage d'observation en "+metierVise()+
+    (ent?" chez "+ent:"")+
     " de "+CONFIG.STAGE_DEBUT+" à "+CONFIG.STAGE_FIN+", "+CONFIG.RYTHME_STAGE+", "+
     MOTIFS[S.obj.motif]+" en "+depCourt()+".";
 }
@@ -764,26 +813,28 @@ function vForm(){ const f=S.form; return `
 À 16 ans, ce que tu étudies est ce que tu as de plus solide. Un employeur qui lit « pré-DEP » comprend
 tout de suite pourquoi tu es devant lui.</div>
 <div class="champ"><label>Ton école</label>
-  <label class="case ${f.confirme?'coche':''}">
-    <input type="checkbox" ${f.confirme?'checked':''} onchange="majF('form.confirme',this.checked)">
-    ${esc(CONFIG.NOM_ECOLE)}, ${esc(CONFIG.VILLE_ECOLE)}</label></div>
+  <select onchange="majF('form.ecole',this.value)">${opts(ECOLES.map(x=>x.n),f.ecole,"— Choisir —")}</select></div>
+${f.ecole==="Autre école"?`<div class="duo" style="margin-bottom:18px">
+  <div class="champ" style="margin:0"><label>Nom de ton école</label>
+    <input type="text" value="${esc(f.ecoleAutre)}" oninput="maj('form.ecoleAutre',this.value)"></div>
+  <div class="champ" style="margin:0"><label>Ville de ton école</label>
+    <input type="text" value="${esc(f.villeAutre)}" oninput="maj('form.villeAutre',this.value)"></div>
+</div>`:""}
 <div class="champ"><label>Années de ta formation</label>
   <p class="aide">De l'année où tu as commencé à celle où tu termines.</p>
   <div class="duo">
     <select onchange="majF('form.anD',this.value)">${opts(annees(),f.anD,"De…")}</select>
     <select onchange="majF('form.anF',this.value)">${opts(annees(),f.anF,"à…")}</select>
   </div></div>
+${listeLibre("form.mentions","Un prix ou une mention (facultatif)",
+  "Élève du mois, médaille, brevet de sauveteur, certificat. Quelqu'un d'autre te l'a donné : ça vaut plus que dix adjectifs.",
+  "Ex. : Élève du mois, janvier 2026",3)}
 <div class="bloc"><h3>Ce qui sera écrit</h3>
   <p style="margin:0 0 4px"><b>${esc(CONFIG.NOM_COURS)} (pré-DEP)</b> — ${esc(f.anD||"____")} à ${esc(f.anF||"____")}</p>
-  <p style="margin:0 0 4px">${esc(CONFIG.NOM_ECOLE)}, ${esc(CONFIG.VILLE_ECOLE)}</p>
+  <p style="margin:0 0 4px">${esc(ecoleTexte()||"Choisis ton école ci-dessus.")}</p>
   <p style="margin:0;color:#5A6B7E">${depVise()?"DEP visé : "+esc(depVise()):"Choisis d'abord ton métier à l'étape 2."}</p></div>
-<div class="champ"><label>Cartes et attestations que tu détiens vraiment</label>
-  <p class="aide">Coche seulement ce que tu as en main. Une carte inventée se découvre à la première journée.</p>
-  <div class="cases">${CARTES.map(c=>`<label class="case ${f.cartes.includes(c)?'coche':''}">
-    <input type="checkbox" ${f.cartes.includes(c)?'checked':''} onchange="bascule(S.form.cartes,'${jq(c)}')">${esc(c)}</label>`).join("")}</div></div>
-${listeLibre("form.cartesAutres","Une autre carte ou formation",
-  "Par exemple : cours de gardiennage de la Croix-Rouge, carte de conduite de chariot élévateur.",
-  "Nom de la carte ou de la formation",4)}`;
+<div class="avis">Tes cartes et attestations (MAPAQ, RCR, SIMDUT, permis de conduire) s'inscrivent
+à l'étape 6, avec tes compétences.</div>`;
 }
 
 /* ---------- entrées d'expérience et d'implication ---------- */
@@ -809,7 +860,7 @@ function ligneTache(txt,ix,coche,num,onTog,onNum){
 function blocTaches(e,src,chemin,cheminAutres,minT){
   const b=bank(e,src), n=nbTaches(e);
   return `<div class="champ"><label>Tes tâches — de ${minT} à 5</label>
-  <p class="aide">Coche seulement ce que tu as vraiment fait. Chaque tâche commence par un verbe à l'infinitif.</p>
+  <p class="aide">Coche ce que tu as vraiment fait. Chaque tâche commence par un verbe : servir, ranger, préparer.</p>
   ${b?`<div class="lignes">${b.lignes.map((l,ix)=>ligneTache(l,ix,e.lignes.includes(ix),e.nums[ix],
       `basculeT('${jq(chemin)}',${ix})`,`numT('${jq(chemin)}',${ix},this.value)`)).join("")}</div>`
     :`<p class="aide">Écris toi-même tes tâches ci-dessous.</p>`}
@@ -859,14 +910,15 @@ function choisirExp(i,v){ const e=S.exp[i];
 function vImp(){
   const p=S.imp;
   const liste=Object.keys(IMPLICATIONS).map(k=>({v:k,l:IMPLICATIONS[k].perso?"Autre (à écrire)":IMPLICATIONS[k].titre}));
-  if(p.aucune) return `
-<div class="avis"><strong>Aucune implication déclarée</strong>
-Ton CV s'appuie alors seulement sur tes expériences : il t'en faut deux à l'étape 4.</div>
+  const preuve=`<div class="avis"><strong>Le bénévolat fait rappeler</strong>
+Des chercheurs ont envoyé de vrais CV à de vrais employeurs. Ceux qui montraient du bénévolat
+ont reçu 45 % d'appels en plus. Choisis celui qui ressemble le plus à ton métier.</div>`;
+  if(p.aucune) return preuve+`
+<div class="avis"><strong>Pas d'implication pour l'instant</strong>
+Ton CV s'appuie alors sur tes deux expériences de l'étape 4. Reviens ici dès que tu en auras une.</div>
 <label class="case coche"><input type="checkbox" checked onchange="S.imp.aucune=false;rendre()">
 Je n'ai aucune implication à inscrire</label>`;
-  return `
-<div class="avis"><strong>Ça compte plus que tu penses</strong>
-Un employeur qui hésite entre deux stagiaires prend celui qui a déjà tenu un engagement bénévole.</div>
+  return preuve+`
 <div class="bloc"><h3>Ton implication</h3>
   <div class="champ"><label>Type</label>
     <select onchange="choisirImp(this.value)">${opts(liste,p.type,"— Choisir —")}</select></div>
@@ -897,8 +949,7 @@ function vComp(){
       <input type="checkbox" ${c.competences.includes(x)?'checked':''} onchange="bascule(S.comp.competences,'${jq(x)}',6)">${esc(x)}</label>`).join("")}</div></div>`;
   return `
 <div class="avis"><strong>La règle de l'anecdote</strong>
-Pour chaque case que tu coches, tu dois pouvoir raconter une fois où tu l'as montrée.
-Si tu ne trouves pas d'histoire, décoche.</div>
+Coche une case, raconte-toi une fois où tu l'as montrée. Si l'histoire vient, garde-la.</div>
 
 <div class="champ"><label>Savoir-être — qui tu es au travail</label>
   <p class="aide">Entre 4 et 8 qualités. C'est ce qu'un employeur regarde en premier chez un stagiaire.</p>
@@ -911,7 +962,16 @@ Si tu ne trouves pas d'histoire, décoche.</div>
   ${tech(COMP_TRANSFERABLES,"Utiles dans tous les métiers")}
   ${listeLibre("comp.competencesAutres","Une autre compétence, écrite par toi",
      "","Ex. : Monter et démonter un échafaudage roulant",4)}
-  <div class="compteur ${nbTech>=2?'ok':'non'}">${nbTech} compétence(s) sur 2 minimum</div></div>`;
+  <div class="compteur ${nbTech>=2?'ok':'non'}">${nbTech} compétence(s) sur 2 minimum</div></div>
+
+<div class="champ"><label>Cartes et attestations que tu détiens vraiment</label>
+  <p class="aide">Coche ce que tu as vraiment en main. C'est souvent la première chose qu'un employeur
+  cherche sur ton CV.</p>
+  <div class="cases">${CARTES.map(x=>`<label class="case ${c.cartes.includes(x)?'coche':''}">
+    <input type="checkbox" ${c.cartes.includes(x)?'checked':''} onchange="bascule(S.comp.cartes,'${jq(x)}')">${esc(x)}</label>`).join("")}</div></div>
+${listeLibre("comp.cartesAutres","Une autre carte ou formation",
+  "Par exemple : cours de gardiennage de la Croix-Rouge, carte de conduite de chariot élévateur.",
+  "Nom de la carte ou de la formation",4)}`;
 }
 
 function vAtouts(){
@@ -926,7 +986,7 @@ ${a.maternelle==="autre"?`<div class="champ"><label>Écris ta langue maternelle<
   <input type="text" value="${esc(a.maternelleAutre)}" oninput="maj('atouts.maternelleAutre',this.value)"></div>`:""}
 
 <div class="champ"><label>Autres langues que tu parles</label>
-  <p class="aide">Ajoute-les une par une, avec ton niveau réel. Un employeur peut te tester en entrevue.</p>
+  <p class="aide">Ajoute-les une par une, avec ton vrai niveau. Un employeur peut te faire dire deux phrases en entrevue.</p>
   ${a.langues.map((x,i)=>`<div class="duo" style="margin-bottom:9px">
     <select onchange="S.atouts.langues[${i}].l=this.value;rendre()">${opts(LANGUES,x.l,"Langue")}</select>
     <div style="display:flex;gap:8px">
@@ -942,14 +1002,14 @@ ${a.maternelle==="autre"?`<div class="champ"><label>Écris ta langue maternelle<
 </div>
 
 <div class="champ"><label>Connaissances informatiques</label>
+  <p class="aide">Coche les logiciels que tu sais utiliser. Ton niveau, tu le montreras sur place.</p>
   <div class="cases">${INFORMATIQUE.map(x=>`<label class="case ${a.info.includes(x)?'coche':''}">
-    <input type="checkbox" ${a.info.includes(x)?'checked':''} onchange="bascule(S.atouts.info,'${jq(x)}',6)">${esc(x)}</label>`).join("")}</div>
-  ${a.info.length?`<div style="margin-top:9px;max-width:260px">
-    <select style="width:100%;padding:9px 11px;border:1px solid var(--trait);border-radius:5px"
-      onchange="majF('atouts.niveauInfo',this.value)">${opts(NIVEAUX_INFO,a.niveauInfo,"Ton niveau général")}</select></div>`:""}</div>
+    <input type="checkbox" ${a.info.includes(x)?'checked':''} onchange="bascule(S.atouts.info,'${jq(x)}',6)">${esc(x)}</label>`).join("")}</div></div>
+${listeLibre("atouts.infoAutres","Un autre logiciel ou outil","",
+  "Ex. : caisse enregistreuse, logiciel de rendez-vous",4)}
 
 <div class="champ"><label>Centres d'intérêt</label>
-  <p class="aide">Maximum 4. Ils révèlent des traits de ta personnalité et servent souvent à briser la glace en entrevue.</p>
+  <p class="aide">Maximum 4. C'est souvent par là qu'une entrevue commence.</p>
   <div class="cases">${INTERETS.map(x=>`<label class="case ${a.interets.includes(x)?'coche':''}">
     <input type="checkbox" ${a.interets.includes(x)?'checked':''} onchange="bascule(S.atouts.interets,'${jq(x)}',4)">${esc(x)}</label>`).join("")}</div></div>
 ${listeLibre("atouts.interetsAutres","Un autre centre d'intérêt","","Ex. : Réparation de vélos",3)}
@@ -959,8 +1019,9 @@ de ${esc(CONFIG.STAGE_DEBUT)} à ${esc(CONFIG.STAGE_FIN)}. C'est déjà écrit d
 }
 
 function vRefs(){ return `
-<div class="avis"><strong>Deux règles, aucune exception</strong>
-Jamais un membre de ta famille. Et tu appelles la personne <em>avant</em> d'écrire son nom.</div>
+<div class="avis"><strong>Deux appels à faire aujourd'hui</strong>
+Choisis deux personnes en dehors de ta famille, et demande-leur si elles acceptent.
+Une personne prévenue répond bien quand l'employeur appelle.</div>
 <div class="avis gouv">Québec.ca recommande de <b>ne pas inscrire tes références sur le CV</b>, mais d'apporter
 la liste en entrevue. Ton CV affichera donc « Références disponibles sur demande », et l'outil te prépare
 une feuille séparée à imprimer.</div>
@@ -1021,6 +1082,19 @@ function cleTri(e){
   const an=parseInt(e.anF||e.anD)||0, mo=MOIS.indexOf(e.moisF||e.moisD)+1;
   return an*12+mo;
 }
+/* Les compétences propres au métier visé passent en tête : dans une liste, l'oeil
+   s'arrête sur les deux premiers items. Puis celles que l'élève a écrites lui-même,
+   puis les transférables, communes à tous les CV du groupe. */
+function competencesOrdonnees(){
+  const d=DOMAINES[S.obj.domaine], dom=(d&&d.comp)||[];
+  const rang=x=>dom.indexOf(x)>=0?0:2;
+  const cochees=S.comp.competences.slice()
+    .map((x,i)=>({x,i}))
+    .sort((a,b)=>(rang(a.x)-rang(b.x))||(a.i-b.i))
+    .map(o=>o.x);
+  const tete=cochees.filter(x=>rang(x)===0), reste=cochees.filter(x=>rang(x)!==0);
+  return tete.concat(S.comp.competencesAutres, reste);
+}
 function cvData(){
   const c=S.coord, a=S.atouts, f=S.form;
   const ville = c.ville==="Autre" ? c.villeAutre : c.ville;
@@ -1040,21 +1114,25 @@ function cvData(){
     taches:taches(S.imp,IMPLICATIONS)} : null;
 
   const supp=[];
-  if(langues.length) supp.push("Langues : "+langues.join(", "));
-  if(a.info.length) supp.push("Informatique : "+a.info.join(", ")+(a.niveauInfo?" ("+a.niveauInfo+")":""));
-  const cartes=f.cartes.concat(f.cartesAutres);
-  if(cartes.length) supp.push("Cartes et attestations : "+cartes.join(", "));
-  supp.push("Disponibilités : "+CONFIG.RYTHME_STAGE.replace("à raison de ",""));
+
+
+  supp.push({k:"Disponibilités",v:CONFIG.RYTHME_STAGE.replace("à raison de ","")});
 
   return {
     nom:((c.prenom+" "+c.nom).trim()).toUpperCase(),
     contact:[ville,tel,c.courriel].filter(Boolean).join("  ·  "),
     objectif:texteObjectif(),
-    ecole:CONFIG.NOM_ECOLE+", "+CONFIG.VILLE_ECOLE,
+    ecole:ecoleTexte(),
+    mentions:S.form.mentions.slice(),
     annees:(f.anD||"____")+" – "+(f.anF||"____"),
     dep:depVise(), exps, imp,
     qualites:S.comp.qualites,
-    competences:S.comp.competences.concat(S.comp.competencesAutres),
+    competences:competencesOrdonnees(),
+    cartes:S.comp.cartes.concat(S.comp.cartesAutres),
+    langues:langues,
+    info:a.info.concat(a.infoAutres),
+    metier:metierVise(),
+    entreprise:(S.obj.entreprise||"").trim(),
     supp, interets:S.atouts.interets.concat(S.atouts.interetsAutres),
     refs:S.refs.filter(r=>!vide(r.prenom)||!vide(r.nom)).map(r=>({
       nom:(r.prenom+" "+r.nom).trim(),
@@ -1063,49 +1141,176 @@ function cvData(){
   };
 }
 
-function rendreApercu(){
-  const d=cvData(), f=$("#feuille"), g=s=>'<span class="vide">'+s+'</span>';
+/* Mise en relief : le gras n'attire l'oeil que s'il reste rare. Budget de la page :
+   le métier visé dans l'objectif, et les cartes détenues. Ce sont des faits vérifiables ;
+   on ne met jamais en gras une qualité qu'on s'attribue à soi-même. */
+/* Découpe une phrase en segments normaux et en segments à mettre en gras.
+   L'entreprise passe avant le métier : c'est le mot le plus spécifique de la phrase,
+   et si les deux se chevauchent, c'est lui qui doit gagner. */
+function segmenter(texte,marques){
+  let parts=[{t:texte,b:0}];
+  (marques||[]).filter(m=>m&&String(m).trim()).forEach(m=>{
+    m=String(m); const out=[];
+    parts.forEach(pz=>{
+      if(pz.b){ out.push(pz); return; }
+      const i=pz.t.indexOf(m);
+      if(i<0){ out.push(pz); return; }
+      if(i>0) out.push({t:pz.t.slice(0,i),b:0});
+      out.push({t:m,b:1});
+      const r=pz.t.slice(i+m.length); if(r) out.push({t:r,b:0});
+    });
+    parts=out;
+  });
+  return parts;
+}
+function gras(texte,marques){
+  return segmenter(texte,marques).map(pz=>pz.b?'<b>'+esc(pz.t)+'</b>':esc(pz.t)).join("");
+}
+function htmlCV(d){
+  const g=s=>'<span class="vide">'+s+'</span>';
+  const entree=(t,org,per,taches)=>
+    '<div class="entree"><div class="tete"><span>'+esc(t)+(org?' — '+esc(org):'')+'</span>'+
+    '<span>'+esc(per)+'</span></div>'+
+    (taches&&taches.length?'<ul>'+taches.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</div>';
+  const sousSec=(titre,contenu)=>'<p class="sous-sec"><b>'+titre+' :</b> '+contenu+'</p>';
+
   let h = '<p class="nom">'+(d.nom||g("TON NOM"))+'</p>';
   h += '<p class="coord">'+(d.contact||g("ville · téléphone · courriel"))+'</p>';
-  if(d.objectif) h+='<h5>Objectif de carrière</h5><p>'+esc(d.objectif)+'</p>';
+  if(d.objectif) h+='<h5>Objectif de carrière</h5><p>'+gras(d.objectif,[d.entreprise,d.metier])+'</p>';
+
   h += '<h5>Formation</h5><div class="entree"><div class="tete"><span>'+
        esc(CONFIG.NOM_COURS)+' (pré-DEP)</span><span>'+esc(d.annees)+'</span></div>'+
        '<div class="sous">'+esc(d.ecole)+'</div>'+
-       (d.dep?'<div>DEP visé : '+esc(d.dep)+'</div>':'')+'</div>';
-  if(d.competences.length||d.qualites.length){
+       (d.dep?'<div>DEP visé : '+esc(d.dep)+'</div>':'')+
+       (d.mentions.length?'<ul>'+d.mentions.map(x=>'<li>'+esc(x)+'</li>').join('')+'</ul>':'')+'</div>';
+
+  if(d.competences.length||d.qualites.length||d.cartes.length||d.info.length||d.langues.length){
     h+='<h5>Compétences</h5>';
     if(d.competences.length) h+='<ul>'+d.competences.map(c=>'<li>'+esc(c)+'</li>').join('')+'</ul>';
-    if(d.qualites.length) h+='<p style="margin-top:4px">'+d.qualites.map(esc).join('  ·  ')+'</p>';
+    if(d.qualites.length)  h+=sousSec("Qualités", d.qualites.map(esc).join("  ·  "));
+    if(d.info.length)      h+=sousSec("Informatique", d.info.map(esc).join(", "));
+    if(d.langues.length)   h+=sousSec("Langues", d.langues.map(esc).join(", "));
+    if(d.cartes.length)    h+=sousSec("Cartes et attestations", d.cartes.map(esc).join(", "));
   }
   if(d.exps.length){
     h+='<h5>Expérience de travail</h5>';
-    d.exps.forEach(e=>{ h+='<div class="entree"><div class="tete"><span>'+esc(e.titre)+
-      (e.org?' — '+esc(e.org):'')+'</span><span>'+esc(e.per)+'</span></div><ul>'+
-      e.taches.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>'; });
+    d.exps.forEach(e=>{ h+=entree(e.titre,e.org,e.per,e.taches); });
   }
-  if(d.imp){
-    h+='<h5>Implication bénévole</h5><div class="entree"><div class="tete"><span>'+esc(d.imp.titre)+
-      (d.imp.org?' — '+esc(d.imp.org):'')+'</span><span>'+esc(d.imp.per)+'</span></div><ul>'+
-      d.imp.taches.map(t=>'<li>'+esc(t)+'</li>').join('')+'</ul></div>';
-  }
-  if(d.supp.length) h+='<h5>Renseignements supplémentaires</h5>'+d.supp.map(l=>'<p>'+esc(l)+'</p>').join('');
-  if(d.interets.length) h+="<h5>Centres d'intérêt</h5><p>"+d.interets.map(esc).join('  ·  ')+'</p>';
+  if(d.imp) h+='<h5>Implication bénévole</h5>'+entree(d.imp.titre,d.imp.org,d.imp.per,d.imp.taches);
+  if(d.supp.length) h+='<h5>Renseignements supplémentaires</h5>'+
+    d.supp.map(l=>'<p>'+esc(l.k)+' : '+esc(l.v)+'</p>').join('');
+  if(d.interets.length) h+="<h5>Centres d'intérêt</h5><p>"+d.interets.map(esc).join("  ·  ")+'</p>';
   h+='<h5>Références</h5><p>Références disponibles sur demande.</p>';
-  f.innerHTML=h;
+  return h;
+}
 
-  let r='<p class="nom" style="font-size:13pt">LISTE DE RÉFÉRENCES</p>';
+/* ---------- la page unique ----------
+   Deux leviers, dans cet ordre. On resserre d'abord l'air entre les blocs : l'oeil ne
+   le remarque pas, parce qu'il ne compare pas deux CV côte à côte. On ne touche au corps
+   du texte qu'ensuite, et jamais sous 8,5 points. Si même le dernier palier ne suffit pas,
+   on ne rapetisse rien du tout : un CV illisible ET sur deux pages serait le pire des
+   deux mondes. On remet la pleine taille et on prévient l'élève. */
+const PALIERS=[
+  [1,1],    [1,.92],  [1,.84],  [1,.76],  [1,.70],
+  [.975,.70],[.95,.68],[.925,.66],[.90,.64],[.875,.62],[.86,.60]
+];
+let ECH=1, tientSurUnePage=true;
+function ajusterPage(h){
+  const m=$("#mesure"), e=$("#etat-page"), r=document.documentElement;
+  if(!m || !r || !m.offsetWidth){ tientSurUnePage=true; return; }
+  m.innerHTML=h;
+  /* 17,2 cm de large et 23,9 cm de haut : la zone utile la plus étroite entre
+     une page lettre et une page A4, marges de 1,9 cm. Le Word a les mêmes. */
+  const pxCm=m.offsetWidth/17.2, budget=23.7*pxCm;
+  const poser=i=>{ r.style.setProperty("--ech",PALIERS[i][0]);
+                   r.style.setProperty("--air",PALIERS[i][1]); return m.scrollHeight; };
+  let i=0;
+  while(i<PALIERS.length-1 && poser(i)>budget) i++;
+  tientSurUnePage = poser(i)<=budget;
+  if(!tientSurUnePage) i=0;      /* deux pages assumées : on rend sa taille au texte */
+  poser(i); ECH=PALIERS[i][0];
+  if(!e) return;
+  if(tientSurUnePage){
+    e.className="etat-page";
+    e.innerHTML='<span>✓</span><span>Ton CV tient sur une seule page.</span>';
+  }else{
+    e.className="etat-page deborde";
+    e.innerHTML='<span>!</span><span>'+esc(messageDeuxPages())+'</span>';
+  }
+}
+function messageDeuxPages(){
+  return "Avec cette longueur, ton CV fera deux pages. Pour le ramener à une seule : "+
+         "retire une tâche moins forte, une qualité ou un centre d'intérêt.";
+}
+
+function rendreApercu(){
+  const d=cvData(), g=s=>'<span class="vide">'+s+'</span>';
+  const h=htmlCV(d);
+  $("#feuille").innerHTML=h;
+  ajusterPage(h);
+
+  let r='<p class="nom" style="font-size:1.35em">LISTE DE RÉFÉRENCES</p>';
   r+='<p class="coord">'+(d.nom||g("TON NOM"))+(d.contact?'  ·  '+esc(d.contact):'')+'</p>';
   if(!d.refs.length) r+='<p class="vide">Tes deux références apparaîtront ici.</p>';
   d.refs.forEach(x=>{ r+='<div class="entree"><p><b>'+esc(x.nom)+'</b></p>'+
     '<p>'+esc(x.lien)+'</p><p>'+(x.tel?esc(x.tel):g("téléphone à venir"))+
     (x.prevenue?'  ·  Personne prévenue':'')+'</p></div>'; });
-  r+='<p style="margin-top:14px;font-size:8.5pt;color:#444">À apporter en entrevue. Ne pas joindre au CV.</p>';
+  r+='<p style="margin-top:1.4em;font-size:.88em;color:#444">À apporter en entrevue. Ne pas joindre au CV.</p>';
   $("#feuille-refs").innerHTML=r;
 }
 
 /* =====================================================================
    ÉTAPE 9
    ===================================================================== */
+/* Les fautes sont le facteur le mieux documenté du tri des CV : deux expérimentations
+   auprès de recruteurs francophones et néerlandophones montrent qu'elles font chuter les
+   convocations, même pour des postes où l'on écrit peu. Ces règles ne remplacent pas une
+   relecture humaine — elles attrapent les six erreurs les plus fréquentes et les plus sûres
+   à détecter, sans jamais bloquer l'élève. */
+const ACRONYMES = ["SIMDUT","RCR","MAPAQ","ASP","DEP","DES","CV","CPE","CISSS","PMT","TPS","TVQ","RTL","CFP"];
+const ACCENT_MANQUANT = {
+  "Ecole":"École","Eleve":"Élève","Eleves":"Élèves","Etudiant":"Étudiant","Etudiante":"Étudiante",
+  "Equipe":"Équipe","Etablissement":"Établissement","Epicerie":"Épicerie","Ete":"Été","Etage":"Étage",
+  "Education":"Éducation","Evenement":"Événement","Electricite":"Électricité","Eclairage":"Éclairage"
+};
+function textesEleve(){
+  const t=[];
+  const pousser=(txt,et)=>{ if(txt&&String(txt).trim()) t.push({txt:String(txt),et:et}); };
+  pousser(S.coord.prenom,0); pousser(S.coord.nom,0); pousser(S.coord.villeAutre,0);
+  pousser(S.obj.metierAutre,1); pousser(S.obj.depAutre,1); pousser(S.obj.entreprise,1);
+  pousser(S.form.ecoleAutre,2); pousser(S.form.villeAutre,2);
+  S.form.mentions.forEach(x=>pousser(x,2));
+  S.exp.forEach(e=>{ pousser(e.typeAutre,3); pousser(e.org,3); (e.autres||[]).forEach(x=>pousser(x,3)); });
+  if(S.imp){ pousser(S.imp.typeAutre,4); pousser(S.imp.org,4); (S.imp.autres||[]).forEach(x=>pousser(x,4)); }
+  S.comp.competencesAutres.forEach(x=>pousser(x,5));
+  S.comp.cartesAutres.forEach(x=>pousser(x,5));
+  S.atouts.infoAutres.forEach(x=>pousser(x,6));
+  S.atouts.interetsAutres.forEach(x=>pousser(x,6));
+  S.refs.forEach(r=>{ pousser(r.prenom,7); pousser(r.nom,7); pousser(r.lienAutre,7); pousser(r.precision,7); });
+  return t;
+}
+function pieges(){
+  const out=[], vu={};
+  const ajouter=(msg,et)=>{ const c=msg+"|"+et; if(!vu[c]){ vu[c]=1; out.push([msg,et]); } };
+  textesEleve().forEach(o=>{
+    const t=o.txt, et=o.et;
+    if(/  +/.test(t)) ajouter("Deux espaces de suite dans « "+court(t)+" ».",et);
+    if(/\s+[,.;]/.test(t)) ajouter("Espace avant la ponctuation dans « "+court(t)+" ».",et);
+    if(/,[^\s]/.test(t)) ajouter("Virgule collée au mot suivant dans « "+court(t)+" ».",et);
+    if(/\b(\w+) \1\b/i.test(t)) ajouter("Un mot écrit deux fois de suite dans « "+court(t)+" ».",et);
+    (t.match(/\b[A-ZÀ-Ý]{4,}\b/g)||[]).forEach(m=>{
+      if(ACRONYMES.indexOf(m)<0) ajouter("« "+m+" » est tout en majuscules. Écris-le normalement.",et); });
+    (t.match(/\b[A-Za-zÀ-ÿ'-]+\b/g)||[]).forEach(m=>{
+      if(ACCENT_MANQUANT[m]) ajouter("« "+m+" » prend un accent : "+ACCENT_MANQUANT[m]+".",et); });
+    /* seulement là où la majuscule est obligatoire : nom, école, organisation, tâche.
+       Un métier, une compétence ou un lien de référence s'écrivent en minuscule. */
+    if(/^[a-zà-ÿ]/.test(t.trim()) && [0,2,3,4].indexOf(et)>=0)
+      ajouter("« "+court(t)+" » commence par une minuscule.",et);
+  });
+  return out;
+}
+function court(t){ t=t.trim(); return t.length>34 ? t.slice(0,32)+"…" : t; }
+
 function grille(){
   const c=S.coord, d=cvData(), f=S.form;
   const nbEntrees = S.exp.filter(e=>e.type).length + (d.imp?1:0);
@@ -1115,27 +1320,52 @@ function grille(){
     ["Adresse courriel professionnelle", courrielOk(c.courriel), 0],
     ["Aucune information interdite (photo, âge, date de naissance, statut civil, NAS)", true, 0],
     ["Objectif complet, avec le métier et le DEP visé", !!d.objectif, 1],
-    ["Formation confirmée avec les années", !!(f.confirme&&f.anD&&f.anF), 2],
+    ["École et années de formation inscrites", !!(ecoleOk()&&f.anD&&f.anF), 2],
     ["Au moins 2 entrées entre Expérience et Implication", nbEntrees>=2, 3],
     ["De 3 à 5 tâches par expérience", S.exp.length>0&&S.exp.every(e=>nbTaches(e)>=3&&nbTaches(e)<=5), 3],
     ["Tous les nombres des tâches sont remplis", S.exp.every(e=>numsOk(e,EXPERIENCES)), 3],
     ["Entre 4 et 8 qualités, et au moins 2 compétences", S.comp.qualites.length>=4&&S.comp.qualites.length<=8&&d.competences.length>=2, 5],
     ["Langue maternelle indiquée", langOk(), 6],
     ["2 références hors famille, prévenues, avec téléphone",
-      S.refs.length===2&&S.refs.every(r=>refOk(r)&&!r.telInconnu), 7]
+      S.refs.length===2&&S.refs.every(r=>refOk(r)&&!r.telInconnu), 7],
+    ["Je peux parler de chaque ligne pendant deux minutes en entrevue", S.verif.defendable, 8],
+    ["J'ai fait relire mon CV par une autre personne", S.verif.relu, 8]
   ];
 }
 function vVerif(){
   const g=grille(), ok=g.every(x=>x[1]), n=g.filter(x=>x[1]).length;
   return `
-<div class="avis"><strong>${ok?"Tout est vert. Ton CV est prêt.":"Il reste "+(12-n)+" point(s) à régler."}</strong>
+<div class="avis"><strong>${ok?"Tout est vert. Ton CV est prêt.":"Il reste "+(g.length-n)+" point(s) à régler."}</strong>
 ${ok?"Relis-le une dernière fois à voix haute avant d'exporter : c'est là qu'on entend les fautes."
    :"Clique sur une ligne rouge pour revenir à l'étape concernée."}</div>
 <ul class="grille">${g.map(x=>`<li class="${x[1]?'ok':''}" onclick="allerA(${x[2]})">
   <b>${x[1]?'✓':'✗'}</b><span>${esc(x[0])}</span></li>`).join("")}</ul>
 
+${tientSurUnePage?"":`<div class="avis"><strong>Ton CV fera deux pages</strong>
+${esc(messageDeuxPages().replace("Avec cette longueur, ton CV fera deux pages. ",""))}
+Une page reste la norme à ton âge, mais tu peux exporter comme ça si tu y tiens.</div>`}
+
+<div class="bloc"><h3>Les deux dernières cases</h3>
+  <p class="aide">Ces deux-là, c'est toi qui les garantis. Ce sont celles qui font la différence
+  le jour de la visite.</p>
+  <label class="case ${S.verif.defendable?'coche':''}">
+    <input type="checkbox" ${S.verif.defendable?'checked':''} onchange="majF('verif.defendable',this.checked)">
+    Chaque ligne de mon CV est vraie et je peux en parler deux minutes en entrevue.</label>
+  <label class="case ${S.verif.relu?'coche':''}" style="margin-top:8px">
+    <input type="checkbox" ${S.verif.relu?'checked':''} onchange="majF('verif.relu',this.checked)">
+    Une autre personne a relu mon CV au complet pour les fautes.</label>
+</div>
+
+${(function(){ const pg=pieges(); if(!pg.length) return `<div class="bloc"><h3>Pièges d'écriture</h3>
+  <p class="aide" style="margin:0">Rien de détecté. L'outil ne connaît que six erreurs fréquentes :
+  fais quand même relire ton CV par quelqu'un.</p></div>`;
+  return `<div class="bloc"><h3>Pièges d'écriture — ${pg.length} à vérifier</h3>
+  <p class="aide">Ce ne sont pas toujours des fautes. Clique sur une ligne pour aller voir.</p>
+  <ul class="grille">${pg.map(x=>`<li onclick="allerA(${x[1]})"><b>!</b><span>${esc(x[0])}</span></li>`).join("")}</ul>
+  </div>`; })()}
+
 <div class="bloc" style="margin-top:20px"><h3>Sortir ton CV</h3>
-  ${ok?"":'<p class="aide" style="color:#B3302A;font-weight:600">Les boutons se débloquent quand les 12 points sont verts.</p>'}
+  ${ok?"":'<p class="aide" style="color:#B3302A;font-weight:600">Les boutons se débloquent quand tous les points sont verts.</p>'}
   <div class="sorties">
     <div class="sortie"><h4>PDF</h4>
       <p>C'est ce que tu donnes aux employeurs. Une page, s'ouvre partout, rien ne bouge.</p>
@@ -1144,7 +1374,10 @@ ${ok?"Relis-le une dernière fois à voix haute avant d'exporter : c'est là qu'
       <p>Un vrai fichier .docx, pour adapter ton CV à un employeur plus tard.</p>
       <button class="btn" ${ok?"":"disabled"} onclick="exportWord()">Télécharger le .docx</button></div>
   </div>
-  <p class="aide" style="margin-top:14px">Dans la fenêtre d'impression, choisis <b>Destination → Enregistrer en PDF</b>.</p>
+  <p class="aide" style="margin-top:14px">Dans la fenêtre d'impression : <b>Destination → Enregistrer en PDF</b>,
+  et laisse <b>Marges → Par défaut</b>. Si tu changes les marges, la mise en page ne tiendra plus sur une page.</p>
+  <p class="aide">Avant chaque visite : retourne à l'étape 2, écris le nom du commerce, réimprime.
+  Ça prend dix secondes et ça se voit.</p>
 </div>
 
 <div class="bloc"><h3>Ta liste de références</h3>
@@ -1157,9 +1390,11 @@ ${ok?"Relis-le une dernière fois à voix haute avant d'exporter : c'est là qu'
   <button class="btn sec" onclick="ouvrirCode()">🔑 Ouvrir mon code de reprise</button></div>`;
 }
 function imprimer(cls){
+  const titre=document.title;
+  document.title = cls==="pr-ref" ? nomFichier()+"_references" : nomFichier();
   document.body.classList.add(cls);
   window.print();
-  setTimeout(()=>document.body.classList.remove(cls),500);
+  setTimeout(()=>{ document.body.classList.remove(cls); document.title=titre; },500);
 }
 
 /* =====================================================================
@@ -1193,34 +1428,45 @@ function zip(files){
 const X = s => String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;");
 function wP(runs,pr){ return '<w:p>'+(pr||'')+runs+'</w:p>'; }
 function wR(t,o){o=o||{}; return '<w:r><w:rPr>'+(o.b?'<w:b/>':'')+(o.i?'<w:i/>':'')+
+  (o.col?'<w:color w:val="'+o.col+'"/>':'')+
   (o.sz?'<w:sz w:val="'+o.sz+'"/><w:szCs w:val="'+o.sz+'"/>':'')+
   (o.caps?'<w:caps/><w:spacing w:val="20"/>':'')+'</w:rPr><w:t xml:space="preserve">'+X(t)+'</w:t></w:r>'; }
 function wTitre(t){ return wP(wR(t,{b:1,caps:1}),
   '<w:pPr><w:pBdr><w:bottom w:val="single" w:sz="6" w:space="1" w:color="000000"/></w:pBdr>'+
   '<w:spacing w:before="200" w:after="60"/></w:pPr>'); }
+function wSousSec(titre,contenu){ return wP(wR(titre+" : ",{b:1})+wR(contenu),
+  '<w:pPr><w:spacing w:before="40" w:after="0"/></w:pPr>'); }
 function wTete(g,d){ return wP(wR(g,{b:1})+'<w:r><w:tab/></w:r>'+wR(d,{}),
   '<w:pPr><w:tabs><w:tab w:val="right" w:pos="10080"/></w:tabs><w:spacing w:before="80" w:after="0"/></w:pPr>'); }
 function wLigne(t,o){ return wP(wR(t,o||{}),'<w:pPr><w:spacing w:after="0"/></w:pPr>'); }
 function wPuce(t){ return wP(wR("• "+t),'<w:pPr><w:ind w:left="284" w:hanging="170"/><w:spacing w:after="0"/></w:pPr>'); }
 function docXml(){
   const d=cvData(); let b="";
-  b+=wP(wR(d.nom,{b:1,sz:34}),'<w:pPr><w:spacing w:after="20"/></w:pPr>');
+  b+=wP(wR(d.nom,{b:1,sz:Math.round(34*ECH)}),'<w:pPr><w:spacing w:after="20"/></w:pPr>');
   b+=wLigne(d.contact);
-  if(d.objectif){ b+=wTitre("Objectif de carrière"); b+=wLigne(d.objectif); }
+  if(d.objectif){ b+=wTitre("Objectif de carrière");
+    b+=wP(segmenter(d.objectif,[d.entreprise,d.metier]).map(pz=>wR(pz.t,pz.b?{b:1}:{})).join(""),
+      '<w:pPr><w:spacing w:after="0"/></w:pPr>'); }
   b+=wTitre("Formation");
   b+=wTete(CONFIG.NOM_COURS+" (pré-DEP)", d.annees);
   b+=wLigne(d.ecole,{i:1});
   if(d.dep) b+=wLigne("DEP visé : "+d.dep);
-  if(d.competences.length||d.qualites.length){ b+=wTitre("Compétences");
+  d.mentions.forEach(x=>{ b+=wPuce(x); });
+  if(d.competences.length||d.qualites.length||d.cartes.length||d.info.length||d.langues.length){
+    b+=wTitre("Compétences");
     d.competences.forEach(c=>{ b+=wPuce(c); });
-    if(d.qualites.length) b+=wLigne(d.qualites.join("  ·  ")); }
+    if(d.qualites.length) b+=wSousSec("Qualités", d.qualites.join("  ·  "));
+    if(d.info.length)     b+=wSousSec("Informatique", d.info.join(", "));
+    if(d.langues.length)  b+=wSousSec("Langues", d.langues.join(", "));
+    if(d.cartes.length)   b+=wSousSec("Cartes et attestations", d.cartes.join(", ")); }
   if(d.exps.length){ b+=wTitre("Expérience de travail");
     d.exps.forEach(e=>{ b+=wTete(e.titre+(e.org?" — "+e.org:""), e.per);
       e.taches.forEach(t=>{ b+=wPuce(t); }); }); }
   if(d.imp){ b+=wTitre("Implication bénévole");
     b+=wTete(d.imp.titre+(d.imp.org?" — "+d.imp.org:""), d.imp.per);
     d.imp.taches.forEach(t=>{ b+=wPuce(t); }); }
-  if(d.supp.length){ b+=wTitre("Renseignements supplémentaires"); d.supp.forEach(l=>{ b+=wLigne(l); }); }
+  if(d.supp.length){ b+=wTitre("Renseignements supplémentaires");
+    d.supp.forEach(l=>{ b+=wLigne(l.k+" : "+l.v); }); }
   if(d.interets.length){ b+=wTitre("Centres d'intérêt"); b+=wLigne(d.interets.join("  ·  ")); }
   b+=wTitre("Références"); b+=wLigne("Références disponibles sur demande.");
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
@@ -1229,11 +1475,20 @@ function docXml(){
     '<w:pgMar w:top="1080" w:right="1080" w:bottom="1080" w:left="1080" w:header="720" w:footer="720" w:gutter="0"/>'+
     '</w:sectPr></w:body></w:document>';
 }
+/* Le nom du fichier est la première chose que l'employeur voit dans une pièce jointe.
+   Sans accent ni espace : certains systèmes de courriel les remplacent par des caractères illisibles. */
+function nomFichier(){
+  const n=(S.coord.prenom+" "+S.coord.nom).trim()
+    .normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+    .replace(/[^A-Za-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
+  return "CV_"+(n||"eleve");
+}
 function exportWord(){
   const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
     '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults>'+
     '<w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+
-    '<w:sz w:val="20"/><w:szCs w:val="20"/><w:lang w:val="fr-CA"/></w:rPr></w:rPrDefault>'+
+    '<w:sz w:val="'+Math.round(20*ECH)+'"/><w:szCs w:val="'+Math.round(20*ECH)+'"/>'+
+    '<w:lang w:val="fr-CA"/></w:rPr></w:rPrDefault>'+
     '<w:pPrDefault><w:pPr><w:spacing w:after="60" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault>'+
     '</w:docDefaults></w:styles>';
   const ct='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
@@ -1253,7 +1508,7 @@ function exportWord(){
     '</Relationships>';
   telecharger(zip([{n:"[Content_Types].xml",d:ct},{n:"_rels/.rels",d:rels},
     {n:"word/document.xml",d:docXml()},{n:"word/_rels/document.xml.rels",d:drels},
-    {n:"word/styles.xml",d:styles}]), "CV - "+(S.coord.prenom+" "+S.coord.nom).trim()+".docx");
+    {n:"word/styles.xml",d:styles}]), nomFichier()+".docx");
 }
 function telecharger(blob,nom){
   const u=URL.createObjectURL(blob), a=document.createElement("a");
@@ -1265,9 +1520,28 @@ function telecharger(blob,nom){
    CODE DE REPRISE
    ===================================================================== */
 const CLE="cv_pmt_rigide_v3";
+/* Les cartes étaient rangées sous « form » jusqu'à la version 3 du fichier.
+   Tout code ou toute sauvegarde d'avant continue de fonctionner : on les remonte
+   sous « comp » au chargement. */
+function migrer(o){
+  if(!o || typeof o!=="object") return o;
+  const f=o.form||{}; o.comp=o.comp||{};
+  if(!Array.isArray(o.comp.cartes))       o.comp.cartes       = Array.isArray(f.cartes)?f.cartes:[];
+  if(!Array.isArray(o.comp.cartesAutres)) o.comp.cartesAutres = Array.isArray(f.cartesAutres)?f.cartesAutres:[];
+  if(o.form){ delete o.form.cartes; delete o.form.cartesAutres;
+    if(!o.form.ecole) o.form.ecole = o.form.confirme ? CONFIG.NOM_ECOLE : "";
+    if(typeof o.form.ecoleAutre!=="string") o.form.ecoleAutre="";
+    if(typeof o.form.villeAutre!=="string") o.form.villeAutre="";
+    delete o.form.confirme; }
+  if(o.atouts && !Array.isArray(o.atouts.infoAutres)) o.atouts.infoAutres=[];
+  if(o.form && !Array.isArray(o.form.mentions)) o.form.mentions=[];
+  if(o.obj && typeof o.obj.entreprise!=="string") o.obj.entreprise="";
+  if(!o.verif || typeof o.verif!=="object") o.verif={relu:false,defendable:false};
+  o.v=4; return o;
+}
 function sauver(){ try{ localStorage.setItem(CLE,JSON.stringify(S)); }catch(e){} }
 function charger(){ try{ const t=localStorage.getItem(CLE);
-  if(t){ S=Object.assign(VIDE(),JSON.parse(t)); return true; } }catch(e){} return false; }
+  if(t){ S=Object.assign(VIDE(),migrer(JSON.parse(t))); return true; } }catch(e){} return false; }
 function b64(str){ const u=new TextEncoder().encode(str); let s="";
   for(let i=0;i<u.length;i+=4096) s+=String.fromCharCode.apply(null,u.subarray(i,i+4096));
   return btoa(s); }
@@ -1315,7 +1589,7 @@ function envoyerCode(){
 function reprendre(){
   const v=$("#zone-reprise").value.trim();
   if(!v.startsWith("CV3")){ $("#msg-code").textContent="Ce code ne commence pas par CV3. Il est incomplet, ou ce n'est pas un code."; return; }
-  try{ S=Object.assign(VIDE(),JSON.parse(deb64(v.slice(3)))); etape=0; fermerModale(); rendre(); }
+  try{ S=Object.assign(VIDE(),migrer(JSON.parse(deb64(v.slice(3))))); etape=0; fermerModale(); rendre(); }
   catch(e){ $("#msg-code").textContent="Le code est tronqué. Recopie-le au complet, du début à la fin."; }
 }
 function fermerModale(){ $("#voile").classList.remove("on"); }
@@ -1349,7 +1623,7 @@ function majBarre(){
   et.textContent=ok?(etape===8?"Ton CV est prêt.":"Étape complète."):b;
 }
 function rendreLeger(){ rendreRail(); rendreApercu(); majBarre(); sauver(); }
-function rendre(){ rendreEtape(); rendreLeger(); }
+function rendre(){ rendreApercu(); rendreEtape(); rendreLeger(); }
 function allerA(i){
   if(i===etape) return;
   if(!accessible(i)){
