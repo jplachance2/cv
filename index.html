@@ -46,6 +46,7 @@ input,select{font-family:inherit;font-size:inherit}
 .pied-rail{padding:14px 18px;border-top:1px solid #33404F;display:flex;flex-direction:column;gap:8px}
 .pied-rail button{background:none;border:1px solid #45536380;color:#C3CDD8;padding:8px;border-radius:5px;text-align:left}
 .pied-rail button:hover{background:#242F3C;color:#fff}
+.version{margin:2px 0 0;font-size:11px;color:#6B7A8B;letter-spacing:.02em}
 
 .entete{position:sticky;top:0;background:var(--panneau);border-bottom:1px solid var(--trait);
   padding:20px 34px 16px;z-index:5}
@@ -209,6 +210,7 @@ input,select{font-family:inherit;font-size:inherit}
     <div class="pied-rail">
       <button onclick="ouvrirCode()">🔑 Mon code de reprise</button>
       <button onclick="toutEffacer()">Tout effacer</button>
+      <p class="version" id="version"></p>
     </div>
   </nav>
   <main class="centre" id="centre">
@@ -248,7 +250,10 @@ const CONFIG = {
   ADRESSE_OUTIL:       "https://jplachance2.github.io/cv/",
   STAGE_DEBUT:         "novembre 2026",
   STAGE_FIN:           "avril 2027",
-  RYTHME_STAGE:        "à raison de deux jours par semaine (jeudi et vendredi)"
+  RYTHME_STAGE:        "à raison de deux jours par semaine (jeudi et vendredi)",
+  /* Repère de version. À changer à CHAQUE téléversement dans GitHub : c'est le seul
+     moyen de savoir d'un coup d'oeil quelle version un élève a réellement à l'écran. */
+  VERSION:             "v14 — 16 septembre 2026"
 };
 
 const DOMAINES = {
@@ -1661,6 +1666,7 @@ function banniereReprise(){
 })();
 
 $("#marque-cours").textContent=CONFIG.NOM_ECOLE||CONFIG.NOM_COURS;
+$("#version").textContent=CONFIG.VERSION;
 charger();
 if(!S.exp.length) S.exp.push(nouvelleExp());
 rendre();
