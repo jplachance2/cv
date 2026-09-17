@@ -6,122 +6,184 @@
 <title>CV guidé — Préparation au marché du travail</title>
 <style>
 :root{
-  --encre:#1B2430; --acier:#5A6B7E; --trait:#C7CED6; --fond:#E9ECEF; --panneau:#FFFFFF;
-  --jaune:#F2B705; --jaune-pale:#FFF3CE; --vert:#237A4B; --vert-pale:#E2F2E8;
-  --rouge:#B3302A; --rouge-pale:#FBE7E5;
+  /* Blanc, gris, et deux couleurs qui ont chacune un seul métier :
+     le bleu dit « c'est ici, c'est cliquable », le vert dit « c'est fait ».
+     Rien d'autre n'est coloré. */
+  --encre:#1D1D1F; --gris:#6E6E73; --gris-pale:#98989D;
+  --trait:#D2D2D7; --trait-fin:#E8E8ED;
+  --fond:#F5F5F7; --panneau:#FFFFFF; --champ:#FFFFFF; --champ-trait:#C4C4CC;
+  --surface-2:#EAEAEF;
+  --bleu:#0066CC; --bleu-clair:#E8F1FC; --bleu-halo:rgba(0,102,204,.16);
+  --vert:#248A3D; --vert-pale:#F0F8F2;
+  --rouge:#C1352C; --rouge-pale:#FCF0EF;
+  --ambre-fonce:#8A6100;
+  --r-s:10px; --r-m:14px; --r-l:20px; --r-pilule:980px;
   --ech: 1; --air: 1;
-  --ui: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --ui: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, Roboto, sans-serif;
   --doc: Arial, "Helvetica Neue", Helvetica, sans-serif;
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%}
-body{background:var(--fond);color:var(--encre);font-family:var(--ui);font-size:15px;line-height:1.5}
-button{font-family:inherit;font-size:inherit;cursor:pointer}
-input,select{font-family:inherit;font-size:inherit}
+body{background:var(--fond);color:var(--encre);font-family:var(--ui);font-size:16px;
+  line-height:1.55;letter-spacing:-.011em;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;font-size:inherit;cursor:pointer;letter-spacing:inherit}
+input,select,textarea{font-family:inherit;font-size:inherit;letter-spacing:inherit}
+:focus-visible{outline:3px solid var(--bleu);outline-offset:2px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 
-.app{display:grid;grid-template-columns:236px minmax(0,1fr) 440px;height:100vh;overflow:hidden}
-.rail{background:var(--encre);color:#fff;overflow-y:auto;display:flex;flex-direction:column}
-.centre{overflow-y:auto;padding:0 0 130px}
-.apercu{background:#DDE1E6;overflow-y:auto;border-left:1px solid var(--trait);padding:18px}
+.app{display:grid;grid-template-columns:284px minmax(0,1fr) 452px;height:100vh;overflow:hidden}
+.rail{background:var(--fond);color:var(--encre);overflow-y:auto;display:flex;flex-direction:column;
+  border-right:1px solid var(--trait-fin)}
+.centre{overflow-y:auto;padding:0 0 136px;background:var(--panneau)}
+.apercu{background:var(--fond);overflow-y:auto;border-left:1px solid var(--trait-fin);padding:30px 26px}
 
-.marque{padding:20px 18px 14px;border-bottom:1px solid #33404F}
-.marque h1{margin:0;font-size:15px;font-weight:650;letter-spacing:-.01em}
-.marque p{margin:4px 0 0;font-size:12px;color:#93A2B3}
-.jauge{padding:14px 18px;border-bottom:1px solid #33404F}
-.jauge-barre{height:6px;background:#33404F;border-radius:3px;overflow:hidden}
-.jauge-plein{height:100%;width:0;background:var(--jaune);transition:width .3s}
-.jauge-txt{font-size:12px;color:#93A2B3;margin-top:7px}
-.etapes{list-style:none;margin:0;padding:8px 0;flex:1}
-.etape{display:flex;gap:11px;align-items:flex-start;padding:10px 18px;cursor:pointer;border-left:3px solid transparent}
-.etape:hover:not(.verrou){background:#242F3C}
-.etape .num{flex:0 0 22px;height:22px;border-radius:50%;background:#33404F;color:#93A2B3;
-  font-size:12px;font-weight:650;display:flex;align-items:center;justify-content:center;margin-top:1px}
-.etape .lib{font-size:13.5px;color:#C3CDD8;line-height:1.35}
-.etape.active{background:#242F3C;border-left-color:var(--jaune)}
+.marque{padding:28px 24px 18px}
+.marque h1{margin:0;font-size:19px;font-weight:600;letter-spacing:-.022em}
+.marque p{margin:3px 0 0;font-size:13px;color:var(--gris);line-height:1.4}
+.jauge{padding:0 24px 22px}
+.jauge-barre{height:6px;background:var(--trait);border-radius:var(--r-pilule);overflow:hidden}
+.jauge-plein{height:100%;width:0;background:var(--vert);border-radius:var(--r-pilule);
+  transition:width .4s cubic-bezier(.4,0,.2,1)}
+.jauge-txt{font-size:13px;color:var(--gris);margin-top:9px}
+
+/* Le fil des dix étapes. C'est une vraie séquence : on la dessine comme telle.
+   L'étape en cours est une pastille bleue pleine — visible du fond de la classe. */
+.etapes{list-style:none;margin:0;padding:4px 14px 12px;flex:1}
+.etape{display:flex;gap:14px;align-items:center;padding:9px 12px;cursor:pointer;
+  border-radius:var(--r-m);position:relative;transition:background .15s}
+.etape::before{content:"";position:absolute;left:25px;top:-5px;width:2px;height:14px;
+  background:var(--trait);border-radius:2px}
+.etape:first-child::before{display:none}
+.etape.fait::before,.etape.fait+.etape::before{background:var(--vert)}
+.etape:hover:not(.verrou):not(.active){background:rgba(0,0,0,.045)}
+.etape .num{flex:0 0 26px;height:26px;border-radius:50%;background:#E3E3E8;color:var(--gris);
+  font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:center;
+  position:relative;z-index:1;transition:background .2s,color .2s}
+.etape .lib{font-size:15px;color:var(--encre);line-height:1.3}
+.etape.active{background:var(--bleu)}
 .etape.active .lib{color:#fff;font-weight:600}
-.etape.active .num{background:var(--jaune);color:var(--encre)}
+.etape.active .num{background:rgba(255,255,255,.28);color:#fff}
 .etape.fait .num{background:var(--vert);color:#fff}
-.etape.verrou{cursor:not-allowed;opacity:.42}
-.etape.verrou .lib::after{content:" 🔒";font-size:11px}
-.pied-rail{padding:14px 18px;border-top:1px solid #33404F;display:flex;flex-direction:column;gap:8px}
-.pied-rail button{background:none;border:1px solid #45536380;color:#C3CDD8;padding:8px;border-radius:5px;text-align:left}
-.pied-rail button:hover{background:#242F3C;color:#fff}
-.version{margin:2px 0 0;font-size:11px;color:#6B7A8B;letter-spacing:.02em}
+.etape.verrou{cursor:not-allowed}
+.etape.verrou .lib{color:var(--gris-pale)}
+.etape.verrou .num{background:#EDEDF0;color:var(--gris-pale)}
+.pied-rail{padding:16px 24px 22px;display:flex;flex-direction:column;gap:10px;
+  border-top:1px solid var(--trait-fin)}
+.pied-rail button{background:none;border:none;color:var(--bleu);padding:6px 0;text-align:left;
+  font-size:15px;font-weight:500}
+.pied-rail button:hover{text-decoration:underline}
+.version{margin:6px 0 0;font-size:12px;color:var(--gris-pale)}
 
-.entete{position:sticky;top:0;background:var(--panneau);border-bottom:1px solid var(--trait);
-  padding:20px 34px 16px;z-index:5}
-.entete .rang{font-size:12.5px;color:var(--acier);margin-bottom:3px}
-.entete h2{margin:0;font-size:23px;letter-spacing:-.02em;font-weight:650}
-.entete p{margin:7px 0 0;font-size:14px;color:var(--acier);max-width:62ch}
-.corps{padding:22px 34px;max-width:780px}
+.entete{position:sticky;top:0;background:rgba(255,255,255,.82);backdrop-filter:saturate(180%) blur(20px);
+  -webkit-backdrop-filter:saturate(180%) blur(20px);border-bottom:1px solid var(--trait-fin);
+  padding:30px 56px 24px;z-index:5}
+.entete .rang{font-size:14px;color:var(--gris);margin-bottom:6px}
+.entete h2{margin:0;font-size:34px;letter-spacing:-.034em;font-weight:600;line-height:1.1}
+.entete p{margin:12px 0 0;font-size:16px;color:var(--gris);max-width:58ch;line-height:1.5}
+.corps{padding:36px 56px;max-width:840px}
 
-.champ{margin-bottom:18px}
-.champ>label{display:block;font-size:13.5px;font-weight:600;margin-bottom:5px}
-.aide{font-size:12.5px;color:var(--acier);margin:0 0 6px;max-width:62ch}
-.champ input[type=text],.champ input[type=email],.champ input[type=tel],.champ input[type=number],.champ select{
-  width:100%;padding:9px 11px;border:1px solid var(--trait);border-radius:5px;background:#fff}
-.champ input:focus,.champ select:focus{outline:2px solid var(--jaune);outline-offset:1px;border-color:var(--jaune)}
-.duo{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
-.quatuor{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px}
+.champ{margin-bottom:30px}
+.champ>label{display:block;font-size:16px;font-weight:600;margin-bottom:7px;letter-spacing:-.016em}
+.aide{font-size:14.5px;color:var(--gris);margin:0 0 12px;max-width:58ch;line-height:1.5}
+/* Une règle unique dans toute l'application : ce sur quoi on agit est blanc et cerné
+   d'un filet ; ce qui ne fait que contenir est une surface grise sans contour. L'élève
+   n'a qu'une chose à apprendre — si c'est blanc et encadré, on écrit ou on clique dedans.
+   Rempli, le champ vire au vert pâle, garde un filet vert et reçoit un crochet :
+   trois signaux pour la même information, lisibles de loin, discrets de près. */
+#corps input[type=text],#corps input[type=email],#corps input[type=tel],#corps input[type=number],
+#corps select,#corps textarea{
+  width:100%;padding:15px 17px;border:1.5px solid var(--champ-trait);border-radius:var(--r-m);
+  background:#fff;font-size:17px;line-height:1.5;color:var(--encre);
+  transition:background .15s, border-color .15s, box-shadow .15s}
+#corps input:hover,#corps select:hover,#corps textarea:hover{border-color:var(--gris)}
+#corps textarea{min-height:112px;resize:vertical}
+#corps textarea[rows="2"]{min-height:82px}
+#corps input:focus,#corps select:focus,#corps textarea:focus{
+  outline:none;background:#fff;border-color:var(--bleu);box-shadow:0 0 0 4px var(--bleu-halo)}
+#corps input:not(:placeholder-shown),#corps textarea:not(:placeholder-shown),#corps select.rempli{
+  background:var(--vert-pale);border-color:var(--vert);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='none' stroke='%23248A3D' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round' d='M4 10.5l4 4 8-9'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 15px center;background-size:20px 20px;
+  padding-right:46px}
+#corps textarea:not(:placeholder-shown){background-position:right 15px top 15px}
+#corps select.rempli{background-image:none;padding-right:17px}
+#corps input:not(:placeholder-shown):focus,#corps textarea:not(:placeholder-shown):focus{
+  background-color:#fff;border-color:var(--bleu);box-shadow:0 0 0 4px var(--bleu-halo)}
+.duo{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.trio{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px}
+.quatuor{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:12px}
 
-.avis{border-left:3px solid var(--jaune);background:var(--jaune-pale);padding:11px 14px;
-  border-radius:0 5px 5px 0;font-size:13.5px;margin-bottom:20px;max-width:66ch}
-.avis strong{display:block;margin-bottom:3px}
-.avis.gouv{border-left-color:var(--acier);background:#EEF1F4}
+/* Un seul genre d'encadré dans toute l'application : l'astuce. L'ampoule dit
+   « ceci est un truc », et rien d'autre ne porte cette marque. Une consigne reste
+   du texte gris sous une étiquette ; un contrôle est blanc et cerné. Trois catégories,
+   pas une de plus. */
+.avis{position:relative;background:var(--surface-2);padding:18px 22px 18px 58px;
+  border-radius:var(--r-l);font-size:15.5px;margin-bottom:28px;max-width:62ch;line-height:1.5}
+.avis::before{content:"";position:absolute;left:20px;top:17px;width:23px;height:23px;
+  background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cg fill='none' stroke='%236E6E73' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3.2a5.8 5.8 0 0 0-3.5 10.4c.5.4.8 1 .9 1.6l.1.6h5l.1-.6c.1-.6.4-1.2.9-1.6A5.8 5.8 0 0 0 12 3.2z'/%3E%3Cpath d='M9.7 18.6h4.6'/%3E%3Cpath d='M10.5 21h3'/%3E%3C/g%3E%3C/svg%3E") no-repeat center/23px 23px;opacity:.85}
+.avis strong{display:block;margin-bottom:5px;font-weight:600}
+.avis.mythe .q{margin:0;font-size:17px;font-weight:500;line-height:1.4;letter-spacing:-.016em}
+.avis.mythe .source{margin:12px 0 0;font-size:13px;color:var(--gris-pale)}
+.avis.mythe .btn{min-width:104px;justify-content:center}
 
-.cases{display:flex;flex-wrap:wrap;gap:7px}
-.case{display:inline-flex;align-items:center;gap:7px;border:1px solid var(--trait);background:#fff;
-  padding:7px 12px;border-radius:20px;font-size:13.5px;cursor:pointer}
-.case:hover{border-color:var(--acier)}
+.cases{display:flex;flex-wrap:wrap;gap:9px}
+.case{display:inline-flex;align-items:center;gap:9px;border:1.5px solid var(--champ-trait);
+  background:#fff;padding:11px 18px;border-radius:var(--r-pilule);font-size:15.5px;
+  cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+.case:hover{border-color:var(--gris);background:#fff}
 .case input{margin:0}
-.case.coche{background:var(--encre);color:#fff;border-color:var(--encre)}
-.case .x{background:none;border:none;color:inherit;font-size:16px;line-height:1;padding:0 0 0 3px;opacity:.7}
+.case.coche{background:var(--bleu);color:#fff}
+.case.coche:hover{background:#0058B0}
+.case .x{background:none;border:none;color:inherit;font-size:18px;line-height:1;padding:0 0 0 4px;opacity:.7}
 .case .x:hover{opacity:1}
 
-.groupe{margin-bottom:16px}
-.groupe .titre-groupe{font-size:12.5px;font-weight:650;color:var(--acier);margin:0 0 7px;
-  padding-bottom:4px;border-bottom:1px solid var(--trait)}
+.groupe{margin-bottom:24px}
+.groupe .titre-groupe{font-size:14px;font-weight:600;color:var(--gris);margin:0 0 10px;padding:0;border:0}
 
-.libre{display:flex;gap:8px;margin-top:9px}
-.libre input{flex:1;padding:8px 11px;border:1px solid var(--trait);border-radius:5px}
+.libre{display:flex;gap:10px;margin-top:12px}
+.libre input{flex:1}
 
-.lignes{display:flex;flex-direction:column;gap:8px}
-.ligne{display:flex;align-items:flex-start;gap:10px;border:1px solid var(--trait);background:#fff;
-  padding:11px 13px;border-radius:6px;cursor:pointer;font-size:14px}
-.ligne:hover{border-color:var(--acier)}
-.ligne.coche{border-color:var(--encre);border-width:2px;padding:10px 12px;background:#F8F9FA}
-.ligne input[type=checkbox]{margin-top:3px;flex:0 0 auto}
+.lignes{display:flex;flex-direction:column;gap:10px}
+.ligne{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--champ-trait);
+  background:#fff;padding:15px 17px;border-radius:var(--r-m);cursor:pointer;font-size:16px;
+  transition:background .15s,border-color .15s}
+.ligne:hover{border-color:var(--gris)}
+.ligne.coche{background:var(--vert-pale);border-color:var(--vert)}
+.ligne input[type=checkbox]{margin-top:4px;flex:0 0 auto;width:18px;height:18px;accent-color:var(--vert)}
 .ligne .txt{flex:1}
-.ligne .nb{width:66px;padding:4px 7px;border:1px solid var(--trait);border-radius:4px;margin:0 4px}
-.ligne.perso{border-style:dashed;border-color:var(--acier);background:#FCFCFD}
+.ligne .nb{width:78px;padding:6px 10px;border:1.5px solid var(--champ-trait);
+  border-radius:var(--r-s);margin:0 5px;background:#fff}
+.ligne.perso{background:#fff;border:1.5px dashed var(--champ-trait)}
 
-.bloc{border:1px solid var(--trait);border-radius:8px;background:var(--panneau);padding:18px 20px;margin-bottom:18px}
-.bloc h3{margin:0 0 14px;font-size:15px;font-weight:650}
-.bloc h3 .sup{float:right;font-weight:400;font-size:13px;color:var(--rouge);cursor:pointer}
+.bloc{border:0;border-radius:var(--r-l);background:var(--fond);padding:26px 28px;margin-bottom:26px}
+.bloc h3{margin:0 0 18px;font-size:21px;font-weight:600;letter-spacing:-.024em}
+.bloc h3 .sup{float:right;font-weight:400;font-size:15px;color:var(--bleu);cursor:pointer}
 
-.compteur{font-size:12.5px;color:var(--acier);margin-top:7px}
+.compteur{font-size:14px;color:var(--gris);margin-top:10px}
 .compteur.ok{color:var(--vert);font-weight:600}
 .compteur.non{color:var(--rouge);font-weight:600}
 
-.ajout{background:#fff;border:1px dashed var(--acier);color:var(--encre);padding:11px 16px;
-  border-radius:6px;width:100%;font-weight:600}
-.ajout:hover{background:var(--jaune-pale);border-color:var(--jaune)}
+.ajout{background:#fff;border:1.5px dashed var(--champ-trait);color:var(--bleu);padding:15px 18px;
+  border-radius:var(--r-m);width:100%;font-weight:500;font-size:16px;transition:background .15s}
+.ajout:hover{background:var(--bleu-clair);border-color:var(--bleu)}
 
-.barre{position:fixed;bottom:0;left:236px;right:440px;background:var(--panneau);
-  border-top:1px solid var(--trait);padding:13px 34px;display:flex;align-items:center;gap:16px;z-index:6}
-.barre .etat{flex:1;font-size:13.5px}
+.barre{position:fixed;bottom:0;left:284px;right:452px;background:rgba(255,255,255,.82);
+  backdrop-filter:saturate(180%) blur(20px);-webkit-backdrop-filter:saturate(180%) blur(20px);
+  border-top:1px solid var(--trait-fin);padding:17px 56px;display:flex;align-items:center;gap:20px;z-index:6}
+.barre .etat{flex:1;font-size:15px;color:var(--gris)}
 .barre .etat.bloque{color:var(--rouge)}
 .barre .etat.ok{color:var(--vert);font-weight:600}
-.btn{background:var(--encre);color:#fff;border:none;padding:11px 22px;border-radius:6px;font-weight:650}
-.btn:hover{background:#2C3B4C}
-.btn[disabled]{background:#B7BEC6;cursor:not-allowed}
-.btn.sec{background:none;color:var(--encre);border:1px solid var(--trait)}
-.btn.sec:hover{background:var(--fond)}
+.btn{background:var(--bleu);color:#fff;border:none;padding:13px 26px;border-radius:var(--r-pilule);
+  font-weight:500;font-size:16px;transition:background .15s,transform .08s}
+.btn:hover{background:#0058B0}
+.btn:active{transform:scale(.97)}
+.btn[disabled]{background:#C9C9CE;cursor:not-allowed;transform:none}
+.btn.sec{background:#fff;color:var(--bleu);box-shadow:inset 0 0 0 1.5px var(--champ-trait)}
+.btn.sec:hover{background:var(--surface-2)}
 
-.apercu h4{margin:0 0 12px;font-size:12.5px;color:#5A6B7E;font-weight:600}
-.apercu h4.second{margin-top:22px}
-.feuille{background:#fff;box-shadow:0 2px 12px rgba(27,36,48,.16);padding:52px 54px;
+.apercu h4{margin:0 0 15px;font-size:14px;color:var(--gris);font-weight:600}
+.apercu h4.second{margin-top:32px}
+.feuille{background:#fff;box-shadow:0 0 0 1px rgba(0,0,0,.05), 0 16px 40px -20px rgba(0,0,0,.28);border-radius:4px;padding:52px 54px;
   font-family:var(--doc);font-size:calc(9.9pt * var(--ech));
   line-height:calc(1.30 + .12 * var(--air));color:#000;min-height:420px}
 .feuille .nom{font-size:1.82em;font-weight:700;letter-spacing:.04em;margin:0 0 .22em}
@@ -139,6 +201,19 @@ input,select{font-family:inherit;font-size:inherit}
 .feuille li{margin-bottom:calc(.18em * var(--air));padding-left:.12em}
 .feuille .vide{color:#B0B6BD;font-style:italic}
 .feuille p{margin:0 0 calc(.3em * var(--air))}
+/* La lettre : même encre, même famille, mais la mise en page d'une lettre —
+   interligne plus généreux, paragraphes séparés, aucun filet. */
+.feuille .l-date{margin:0 0 1.6em;font-size:.97em}
+.feuille .l-dest{margin:0 0 1.4em;font-weight:700}
+.feuille .l-objet{margin:0 0 1.6em}
+.feuille .l-salut{margin:0 0 1.1em}
+.feuille .l-para{margin:0 0 1.1em;text-align:left;line-height:1.55}
+.feuille .l-sig-bloc{margin:1.1em 0 .1em;height:3.4em;display:flex;align-items:flex-end}
+.feuille .l-sig{display:block}
+.feuille .l-sig-txt{display:inline-block;color:#16324F;line-height:1;transform-origin:left bottom}
+.feuille .l-sign{margin:.2em 0 0;font-weight:700}
+.feuille .l-coord{margin:.25em 0 0;color:#222;line-height:1.35}
+.feuille .l-pj{margin:1.6em 0 0;font-size:.92em;color:#222}
 /* sous-sections de COMPÉTENCES : étiquette en gras, contenu au fil du texte */
 .feuille .sous-sec{margin-top:calc(.4em * var(--air))}
 .feuille .sous-sec b{font-weight:700}
@@ -146,31 +221,45 @@ input,select{font-family:inherit;font-size:inherit}
 /* page témoin, hors écran : sert à mesurer la hauteur réelle à l'impression */
 #mesure{position:fixed;left:-9999px;top:0;width:17.2cm;padding:0;min-height:0;
   box-shadow:none;visibility:hidden;pointer-events:none}
-.etat-page{font-size:12px;margin-top:9px;color:var(--acier);display:flex;gap:6px;align-items:baseline}
-.etat-page.deborde{color:#8A6100;font-weight:600}
+.etat-page{font-size:14px;margin-top:14px;color:var(--gris);display:flex;gap:8px;align-items:baseline}
+.etat-page.deborde{color:var(--ambre-fonce);font-weight:600}
 
-.banniere{display:flex;align-items:center;gap:12px;flex-wrap:wrap;background:var(--jaune-pale);
-  border-bottom:2px solid var(--jaune);padding:13px 34px;font-size:14px}
+/* Les deux zones de rédaction de la lettre : les seuls endroits de l'outil où
+   l'élève écrit vraiment. Plus hautes, plus grand texte, plus d'air. */
+#corps textarea.saisie{min-height:184px;font-size:18px;line-height:1.6;padding:20px 22px;
+  border-radius:var(--r-l)}
+#corps textarea.saisie:not(:placeholder-shown){padding-right:52px}
+#corps textarea.saisie::placeholder{color:var(--gris-pale)}
+
+.pad{width:100%;max-width:560px;aspect-ratio:600/180;border:1.5px dashed var(--champ-trait);
+  border-radius:var(--r-l);background:#fff;touch-action:none;cursor:crosshair;display:block}
+.rangee{display:flex;gap:16px;align-items:center;margin-top:14px;flex-wrap:wrap}
+
+.banniere{display:flex;align-items:center;gap:16px;flex-wrap:wrap;background:var(--bleu-clair);
+  border-bottom:1px solid var(--trait-fin);padding:16px 56px;font-size:15px}
 .banniere span{flex:1;min-width:220px}
-.banniere .btn{padding:8px 15px}
+.banniere .btn{padding:10px 20px}
 
 .grille{list-style:none;margin:0;padding:0}
-.grille li{display:flex;gap:10px;padding:9px 12px;border-radius:5px;margin-bottom:5px;font-size:13.5px;
-  background:var(--rouge-pale);color:#6E1F1B;cursor:pointer}
-.grille li.ok{background:var(--vert-pale);color:#17542F}
+.grille li{display:flex;gap:13px;padding:14px 17px;border-radius:var(--r-m);margin-bottom:8px;
+  font-size:15.5px;background:var(--rouge-pale);color:#8A2620;cursor:pointer;transition:transform .08s}
+.grille li:active{transform:scale(.995)}
+.grille li.ok{background:var(--vert-pale);color:#1A6B31}
 .grille li b{flex:0 0 auto}
-.sorties{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:6px}
-.sortie{border:1px solid var(--trait);border-radius:8px;padding:16px;background:#fff}
-.sortie h4{margin:0 0 5px;font-size:14.5px}
-.sortie p{margin:0 0 11px;font-size:13px;color:var(--acier)}
+.sorties{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:10px}
+.sortie{border:0;border-radius:var(--r-l);padding:22px 24px;background:var(--panneau);
+  box-shadow:0 0 0 1px var(--trait-fin)}
+.sortie h4{margin:0 0 7px;font-size:17px;font-weight:600;letter-spacing:-.018em}
+.sortie p{margin:0 0 15px;font-size:15px;color:var(--gris)}
 
-.voile{position:fixed;inset:0;background:rgba(27,36,48,.55);display:none;align-items:center;
-  justify-content:center;z-index:40;padding:20px}
+.voile{position:fixed;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;z-index:40;padding:20px}
 .voile.on{display:flex}
-.modale{background:#fff;border-radius:10px;max-width:620px;width:100%;max-height:86vh;overflow-y:auto;padding:26px}
-.modale h3{margin:0 0 6px;font-size:19px}
-.modale textarea{width:100%;height:130px;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:11.5px;
-  padding:10px;border:1px solid var(--trait);border-radius:5px;resize:vertical}
+.modale{background:#fff;border-radius:var(--r-l);max-width:660px;width:100%;max-height:86vh;
+  overflow-y:auto;padding:34px;box-shadow:0 24px 64px -24px rgba(0,0,0,.4)}
+.modale h3{margin:0 0 10px;font-size:24px;font-weight:600;letter-spacing:-.026em}
+.modale textarea{width:100%;height:150px;font-family:ui-monospace,Menlo,Consolas,monospace;
+  font-size:12px;padding:14px;border:1.5px solid var(--champ-trait);border-radius:var(--r-m);resize:vertical}
 
 @media print{
   .apercu{display:block!important}
@@ -180,20 +269,23 @@ input,select{font-family:inherit;font-size:inherit}
     font-size:calc(9.9pt * var(--ech))}
   body.pr-ref #feuille-refs, body.pr-ref #feuille-refs *{visibility:visible}
   body.pr-ref #feuille-refs{position:absolute;left:0;top:0;width:100%;box-shadow:none;padding:0;font-size:10pt}
+  body.pr-lettre #feuille-lettre, body.pr-lettre #feuille-lettre *{visibility:visible}
+  body.pr-lettre #feuille-lettre{display:block!important;position:absolute;left:0;top:0;width:100%;
+    box-shadow:none;padding:0;font-size:11pt}
   #mesure{display:none!important}
   @page{size:letter;margin:1.9cm}
 }
 @media screen and (max-width:1180px){
-  .app{grid-template-columns:200px minmax(0,1fr)}
+  .app{grid-template-columns:252px minmax(0,1fr)}
   .apercu{display:none}
   .barre{right:0}
 }
 @media screen and (max-width:760px){
   .app{grid-template-columns:1fr}
-  .rail{position:fixed;inset:0 auto 0 0;width:236px;transform:translateX(-100%);transition:transform .2s;z-index:30}
+  .rail{position:fixed;inset:0 auto 0 0;width:284px;transform:translateX(-100%);transition:transform .2s;z-index:30}
   .rail.on{transform:none}
   .barre{left:0}
-  .corps,.entete{padding-left:18px;padding-right:18px}
+  .corps,.entete,.barre,.banniere{padding-left:22px;padding-right:22px}
   .duo,.trio,.quatuor{grid-template-columns:1fr 1fr}
 }
 </style>
@@ -225,6 +317,8 @@ input,select{font-family:inherit;font-size:inherit}
     <div class="etat-page" id="etat-page"></div>
     <h4 class="second">Ta liste de références — à apporter en entrevue, pas à joindre au CV</h4>
     <div class="feuille" id="feuille-refs"></div>
+    <h4 id="titre-lettre" style="display:none">Ta lettre de présentation</h4>
+    <div class="feuille" id="feuille-lettre" style="display:none"></div>
   </aside>
 </div>
 <div class="barre">
@@ -253,7 +347,7 @@ const CONFIG = {
   RYTHME_STAGE:        "à raison de deux jours par semaine (jeudi et vendredi)",
   /* Repère de version. À changer à CHAQUE téléversement dans GitHub : c'est le seul
      moyen de savoir d'un coup d'oeil quelle version un élève a réellement à l'écran. */
-  VERSION:             "v14 — 16 septembre 2026"
+  VERSION:             "v26 — vrai ou faux — 17 septembre 2026"
 };
 
 const DOMAINES = {
@@ -494,13 +588,14 @@ const MOTIFS = [
 const ETAPES = [
   {id:"coord",  t:"Identification", i:"La première chose que l'employeur lit. Donne-lui ce qu'il faut pour te rappeler."},
   {id:"obj",    t:"Objectif",       i:"Une phrase construite à partir de tes choix. Elle dit qui tu es, ce que tu cherches et où tu t'en vas."},
-  {id:"form",   t:"Formation",      i:"À ton âge, c'est la section la plus forte du CV. Elle passe avant l'expérience."},
+  {id:"form",   t:"Formation",      i:"Ce que tu étudies en ce moment, et le métier vers lequel tu t'en vas."},
   {id:"exp",    t:"Expérience",     i:"Tu as déjà travaillé, même sans employeur. Gardiennage, gazon, déneigement, camp de jour : ça compte."},
   {id:"imp",    t:"Implication",    i:"Bénévolat, comité, équipe sportive. Ça montre que tu t'engages et que tu tiens parole."},
   {id:"comp",   t:"Compétences",    i:"Ce que tu es, ce que tu sais faire, et tes cartes. Coche ce que tu peux raconter."},
   {id:"atouts", t:"Renseignements", i:"Langues, informatique, disponibilités, centres d'intérêt."},
   {id:"refs",   t:"Références",     i:"Deux personnes qui t'ont vu travailler ou étudier. Tu les appelles avant."},
-  {id:"verif",  t:"Vérification",   i:"Passe la liste. Quand tout est vert, ton PDF et ton Word se débloquent."}
+  {id:"verif",  t:"Vérification",   i:"Passe la liste. Quand tout est vert, ton PDF et ton Word se débloquent."},
+  {id:"lettre", t:"Lettre",         i:"Facultative, mais elle fait la différence quand tu envoies par courriel. Le CV dit ce que tu as fait ; la lettre dit pourquoi toi."}
 ];
 
 /* =====================================================================
@@ -512,6 +607,11 @@ const VIDE = () => ({
   obj:{domaine:"",domaineAutre:"",metier:"",metierAutre:"",depAutre:"",motif:0,entreprise:""},
   form:{ecole:CONFIG.NOM_ECOLE,ecoleAutre:"",villeAutre:"",anD:"",anF:"",mentions:[]},
   verif:{relu:false,defendable:false},
+  mythes:{},
+  /* La lettre : deux paragraphes construits, deux paragraphes écrits par l'élève.
+     Ce sont ces quatre réponses-là qui font que deux lettres ne se ressemblent pas. */
+  lettre:{civilite:"Je ne sais pas",personne:"",titre:"",adresse:"",connu:"",
+          entreprise:"",exemple:"",qualites:[],sig:{type:"",d:"",i:0}},
   exp:[nouvelleExp()],
   imp:{aucune:false,type:"",typeAutre:"",org:"",moisD:"",anD:"",moisF:"",anF:"",encours:false,
        lignes:[],nums:{},autres:[]},
@@ -635,10 +735,279 @@ function valide(i){
     case 6: return langOk();
     case 7: return S.refs.length===2 && S.refs.every(refOk);
     case 8: return pretAExporter();
+    case 9: return pretAExporter() && lettreCommencee();
   }
   return false;
 }
 function accessible(i){ for(let k=0;k<i;k++) if(!valide(k)) return false; return true; }
+/* =====================================================================
+   LA LETTRE DE PRÉSENTATION
+   Structure de Québec.ca, adaptée à un élève de 4e-5e secondaire qui demande un
+   stage plutôt que de répondre à une offre : en-tête, quatre paragraphes ayant
+   chacun un objectif nommé, salutation, signature, pièce jointe.
+   Aucun blocage : la lettre s'imprime dès que le CV est prêt, et un paragraphe
+   laissé vide est omis plutôt qu'inventé.
+   Toutes les tournures générées sont neutres — aucun accord masculin ou féminin
+   ne dépend d'une information que l'outil n'a pas à demander.
+   ===================================================================== */
+const CONNU = [
+  "Je passe souvent devant votre commerce.",
+  "Je m'y rends souvent avec ma famille.",
+  "Quelqu'un de ma famille m'a parlé de vous.",
+  "Mon enseignant m'a suggéré votre entreprise.",
+  "Un élève de mon école y a déjà fait un stage.",
+  "J'ai trouvé votre entreprise en cherchant les employeurs de ma région."
+];
+const AMORCES_ENTREPRISE = [
+  "Ce qui me plaît chez vous, c'est ",
+  "Je connais votre commerce parce que ",
+  "J'aimerais apprendre chez vous parce que ",
+  "J'ai remarqué que votre entreprise "
+];
+const AMORCES_PROFIL = [
+  "J'ai déjà ",
+  "Par exemple, l'été dernier, j'ai ",
+  "Pendant plus d'un an, j'ai ",
+  "À l'école, je suis la personne qui "
+];
+const VERBES_LETTRE = ["accueillir","aider","apprendre","livrer","nettoyer","organiser",
+  "préparer","ranger","réparer","servir","surveiller","vendre"];
+
+/* ---------- La signature ----------
+   Deux chemins. Le premier : l'élève signe au doigt ou à la souris ; on garde le tracé
+   sous forme de chemin SVG, quelques centaines d'octets, pour que le code de reprise
+   reste copiable. Le second : quatre styles manuscrits composés avec les polices déjà
+   installées sur le poste, avec une inclinaison et un léger tremblé par lettre —
+   une signature parfaitement régulière ne ressemble à rien. */
+const STYLES_SIG = [
+  {n:"Ronde",   f:'"Snell Roundhand","Brush Script MT","Segoe Script","Bradley Hand",cursive', i:-6,  t:1.9, e:.02},
+  {n:"Penchée", f:'"Lucida Handwriting","Segoe Script","Bradley Hand","Apple Chancery",cursive', i:-14, t:1.7, e:.04},
+  {n:"Rapide",  f:'"Ink Free","Bradley Hand","Segoe Script","Chalkboard",cursive', i:-9, t:2.1, e:.06},
+  {n:"Sobre",   f:'"Apple Chancery","Edwardian Script ITC","Segoe Script",cursive', i:-4, t:1.7, e:.01}
+];
+/* Tremblé reproductible : la même personne obtient toujours la même signature,
+   sinon elle change à chaque frappe sous ses yeux. */
+function bruit(graine,i){ const x=Math.sin((graine+i*57.13)*12.9898)*43758.5453; return x-Math.floor(x); }
+function grainePrenom(){ const n=(S.coord.prenom+S.coord.nom); let g=0;
+  for(let i=0;i<n.length;i++) g=(g*31+n.charCodeAt(i))%9973; return g; }
+function signatureHtml(hauteur){
+  const sg=S.lettre.sig||{};
+  const nom=(S.coord.prenom+" "+S.coord.nom).trim();
+  if(!sg.type || !nom) return "";
+  if(sg.type==="trace" && sg.d)
+    return '<svg class="l-sig" viewBox="0 0 600 180" height="'+(hauteur||58)+'" '+
+      'xmlns="http://www.w3.org/2000/svg"><path d="'+sg.d+'" fill="none" stroke="#16324F" '+
+      'stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  if(sg.type==="style"){
+    const st=STYLES_SIG[sg.i||0], g=grainePrenom();
+    const lettres=nom.split("").map((ch,i)=>{
+      if(ch===" ") return '<span style="display:inline-block;width:.28em"></span>';
+      const dy=(bruit(g,i)-.5)*4*st.e*22, rot=(bruit(g,i+40)-.5)*4;
+      return '<span style="display:inline-block;transform:translateY('+dy.toFixed(2)+
+        'px) rotate('+rot.toFixed(2)+'deg)">'+esc(ch)+'</span>';
+    }).join("");
+    return '<span class="l-sig-txt" style="font-family:'+st.f+';font-size:'+st.t+
+      'em;transform:skewX('+st.i+'deg)">'+lettres+'</span>';
+  }
+  return "";
+}
+
+/* =====================================================================
+   VRAI OU FAUX — un par étape
+   Règle que je me suis donnée : rien ici qui ne soit appuyé par une expérimentation
+   publiée ou par un consensus explicite des praticiens. La provenance est affichée
+   sous chaque réponse, et elle dit franchement laquelle des deux c'est.
+   ===================================================================== */
+const MYTHES = {
+  coord:{
+    q:"Mettre ta photo sur ton CV, ça aide à te faire remarquer.",
+    r:false,
+    e:"Des chercheurs ont envoyé 5 312 CV à de vrais employeurs. Seule différence entre deux CV : la photo. "+
+      "Résultat : la photo change les réponses des employeurs pour des raisons qui n'ont rien à voir avec le travail. "+
+      "Les candidates sans photo ont même reçu plus d'appels que celles qui en avaient une. "+
+      "Au Québec, en plus, un employeur n'a pas le droit d'exiger ta photo.",
+    s:"Ruffle et Shtudiner, revue Management Science, 2015."
+  },
+  obj:{
+    q:"Écrire « je suis prêt à faire n'importe quoi » montre que tu es motivé.",
+    r:false,
+    e:"Un employeur ne cherche pas quelqu'un de disponible pour tout : il cherche quelqu'un pour SON travail. "+
+      "Une phrase qui nomme le métier et l'entreprise se lit comme une candidature. Une phrase passe-partout "+
+      "se lit comme une photocopie.",
+    s:"Consensus des services d'emploi, dont Québec.ca."
+  },
+  form:{
+    q:"Sans expérience de travail, un employeur ne te regardera même pas.",
+    r:false,
+    e:"Pour un premier emploi, ce que les employeurs prédisent le mieux, ce n'est pas l'expérience : "+
+      "c'est la fiabilité. Des dizaines d'études rassemblées montrent que le sérieux et la constance "+
+      "annoncent mieux la réussite au travail que presque tout le reste. Et ça, tu peux le montrer sans "+
+      "avoir jamais eu d'employeur.",
+    s:"Schmidt et Hunter, méta-analyse de 85 ans de recherche en sélection de personnel."
+  },
+  exp:{
+    q:"Plus tu écris de tâches sous chaque expérience, mieux c'est.",
+    r:false,
+    e:"Non : au-delà de quatre ou cinq, on ne les lit plus, et les meilleures se noient dans les banales. "+
+      "Mieux vaut trois tâches précises que huit tâches floues. Québec.ca recommande un maximum de cinq.",
+    s:"Québec.ca, rédiger un curriculum vitae."
+  },
+  imp:{
+    q:"Le bénévolat, c'est bien beau, mais ça ne change rien pour se faire engager.",
+    r:false,
+    e:"Des chercheurs ont envoyé de vrais CV à de vrais employeurs. Les CV identiques, sauf qu'ils "+
+      "mentionnaient du bénévolat, ont reçu environ 45 % d'appels en plus. L'effet était le plus fort "+
+      "dans le commerce de détail — là où plusieurs d'entre vous vont cogner.",
+    s:"Expérimentation de terrain sur le bénévolat et le rappel des employeurs."
+  },
+  comp:{
+    q:"Ce qui compte le plus pour engager un jeune, c'est ce qu'il sait déjà faire.",
+    r:false,
+    e:"Les employeurs de PME le disent et la recherche le confirme : pour un stagiaire, ils regardent "+
+      "d'abord s'il arrive à l'heure, s'il écoute et s'il revient. Le technique, ils savent qu'ils vont "+
+      "te l'apprendre. C'est pour ça que tes qualités passent avant tes compétences sur ton CV.",
+    s:"Recherche en psychologie du recrutement sur la conscience professionnelle."
+  },
+  atouts:{
+    q:"Les centres d'intérêt sur un CV, c'est juste du remplissage.",
+    r:false,
+    e:"C'est souvent par là qu'une entrevue commence : c'est le seul endroit où l'employeur voit une personne "+
+      "plutôt qu'un dossier. Deux ou trois suffisent, et ils doivent être vrais — on va t'en parler.",
+    s:"Québec.ca, rédiger un curriculum vitae."
+  },
+  refs:{
+    q:"Les employeurs n'appellent presque jamais les références.",
+    r:false,
+    e:"Ils appellent, surtout pour un mineur qu'ils vont laisser dans leur commerce. Et la première question "+
+      "n'est jamais sur tes compétences : c'est « est-ce qu'il se présente ? ». D'où la règle : préviens la "+
+      "personne avant d'écrire son nom, sinon elle répond mal parce qu'elle est prise de court.",
+    s:"Pratique constante des employeurs, rapportée par les services d'orientation."
+  },
+  verif:{
+    q:"Quelques fautes de français, ce n'est pas si grave pour un stage manuel.",
+    r:false,
+    e:"C'est ce qui est le mieux prouvé de tout ce que tu liras ici. Devant de vrais recruteurs, des CV "+
+      "identiques sauf pour quelques fautes obtiennent nettement moins d'entrevues — y compris pour des "+
+      "postes où l'on n'écrit presque pas. Ce n'est pas le français qu'ils jugent : c'est le soin.",
+    s:"Sterkens et coll., revue PLOS ONE, 2023 ; Martin-Lacroux, 2017."
+  },
+  lettre:{
+    q:"Un employeur juge seulement tes compétences, pas ta personnalité.",
+    r:false,
+    e:"On a montré les mêmes CV à 244 recruteurs. Tous se sont fait une idée de la personnalité du candidat — "+
+      "et cette idée, plus que le contenu, décidait s'ils voulaient le rencontrer. Ils se trompaient souvent. "+
+      "Autant leur donner de quoi se faire la bonne idée : c'est le travail de ta lettre.",
+    s:"Cole et coll., étude auprès de 244 recruteurs."
+  }
+};
+function repondreMythe(id,choix){ S.mythes[id]=choix?"v":"f"; rendre(); }
+function mytheHtml(id){
+  const m=MYTHES[id]; if(!m) return "";
+  const rep=S.mythes[id];
+  if(!rep) return `<div class="avis mythe"><strong>Vrai ou faux ?</strong>
+    <p class="q">${esc(m.q)}</p>
+    <div class="rangee" style="margin-top:14px">
+      <button class="btn sec" onclick="repondreMythe('${jq(id)}',true)">Vrai</button>
+      <button class="btn sec" onclick="repondreMythe('${jq(id)}',false)">Faux</button>
+    </div></div>`;
+  const bon = (rep==="v")===m.r;
+  return `<div class="avis mythe"><strong>${bon?"Bonne réponse.":"Eh non."} C'est ${m.r?"vrai":"faux"}.</strong>
+    <p class="q">${esc(m.q)}</p>
+    <p style="margin:10px 0 0">${esc(m.e)}</p>
+    <p class="source">${esc(m.s)}</p></div>`;
+}
+
+function motsDe(t){ return String(t||"").trim().split(/\s+/).filter(x=>x.length>1).length; }
+function lettreCommencee(){ return motsDe(S.lettre.entreprise)+motsDe(S.lettre.exemple)>0; }
+function originalite(){
+  const l=S.lettre;
+  const sien=motsDe(l.entreprise)+motsDe(l.exemple);
+  const tout=texteLettre().paras.reduce((n,x)=>n+motsDe(x),0);
+  return tout ? Math.round(sien/tout*100) : 0;
+}
+function appelLettre(){
+  const l=S.lettre, n=(l.personne||"").trim();
+  if(l.civilite==="Madame" || l.civilite==="Monsieur") return l.civilite+(n?" "+n:"")+",";
+  return "Madame, Monsieur,";
+}
+function salutationLettre(){
+  const l=S.lettre;
+  const q=(l.civilite==="Madame"||l.civilite==="Monsieur")?l.civilite:"Madame, Monsieur";
+  return "Veuillez agréer, "+q+", mes sincères salutations.";
+}
+function moisFr(){ return ["janvier","février","mars","avril","mai","juin","juillet",
+  "août","septembre","octobre","novembre","décembre"]; }
+function dateLettre(){ const d=new Date();
+  return d.getDate()+" "+moisFr()[d.getMonth()]+" "+d.getFullYear(); }
+
+/* En-tête : nom de la personne, son titre, puis l'entreprise et son adresse —
+   l'ordre prescrit par Québec.ca. */
+function enteteDestinataire(){
+  const l=S.lettre, lignes=[];
+  const civ=(l.civilite==="Madame"||l.civilite==="Monsieur")?l.civilite+" ":"";
+  const n=(l.personne||"").trim();
+  if(n) lignes.push(civ+n);
+  if(!vide(l.titre)) lignes.push(l.titre.trim());
+  const e=(S.obj.entreprise||"").trim();
+  if(e) lignes.push(e);
+  (l.adresse||"").split("\n").forEach(x=>{ if(!vide(x)) lignes.push(x.trim()); });
+  return lignes.join("\n");
+}
+
+function texteLettre(){
+  const l=S.lettre, c=S.coord;
+  const nom=(c.prenom+" "+c.nom).trim();
+  const ville=c.ville==="Autre"?c.villeAutre:c.ville;
+  const tel=telOk(c.tel1,c.tel2,c.tel3) ? c.tel1+" "+c.tel2+"-"+c.tel3 : "";
+  const ent=(S.obj.entreprise||"").trim();
+  const metier=metierVise();
+  const paras=[];
+
+  /* 1. Introduction — qui je suis, ce que je demande, comment je vous connais. */
+  let p1="Je m'appelle "+(nom||"…")+" et je suis élève en "+CONFIG.NOM_COURS+
+    " à "+(ecoleNom()||"mon école")+". Je vous écris pour demander un stage d'observation en "+
+    metier+(ent?" chez "+ent:"")+", de "+CONFIG.STAGE_DEBUT+" à "+CONFIG.STAGE_FIN+", "+
+    CONFIG.RYTHME_STAGE+".";
+  if(!vide(l.connu)) p1+=" "+phrase(l.connu);
+  paras.push(p1);
+
+  /* 2. L'entreprise — pourquoi eux. Écrit par l'élève. */
+  if(!vide(l.entreprise)) paras.push(phrase(l.entreprise));
+
+  /* 3. Le profil — ce que j'apporte, avec un exemple, et l'invitation à lire le CV. */
+  const q=(l.qualites||[]).filter(Boolean);
+  let p3="";
+  if(q.length===1) p3="Si je devais me décrire en un mot, ce serait "+minusculeSimple(q[0])+".";
+  else if(q.length>=2) p3="Si je devais me décrire en deux mots, ce serait "+
+    minusculeSimple(q[0])+" et "+minusculeSimple(q[1])+".";
+  if(!vide(l.exemple)) p3=(p3?p3+" ":"")+phrase(l.exemple);
+  if(p3) p3+=" Vous trouverez le reste de mon parcours dans mon curriculum vitae.";
+  if(p3) paras.push(p3);
+
+  /* 4. Conclusion — remerciement, disponibilité, demande de rencontre, coordonnées. */
+  paras.push("Je vous remercie d'avoir pris le temps de me lire. Je suis disponible pour vous "+
+    "rencontrer au moment qui vous conviendra. Le stage se déroulerait "+
+    CONFIG.RYTHME_STAGE.replace("à raison de ","")+", de "+CONFIG.STAGE_DEBUT+" à "+CONFIG.STAGE_FIN+
+    ". Vous pouvez me joindre au "+(tel||"…")+" ou à "+(c.courriel||"…")+".");
+
+  return {date:dateLettre(), ville:ville||"", pour:enteteDestinataire(),
+          objet:"Demande de stage en "+metier, appel:appelLettre(),
+          salutation:salutationLettre(), paras:paras, nom:nom,
+          coord:[ville,tel,c.courriel].filter(Boolean),
+          pj:"p. j.  Curriculum vitae"};
+}
+/* L'outil assemble les mots de l'élève, il ne les réécrit pas : une lettre un peu
+   maladroite mais visiblement écrite par le jeune vaut mieux qu'une lettre lisse
+   et anonyme. On ne corrige que la majuscule et le point final. */
+function phrase(t){
+  t=String(t||"").trim(); if(!t) return "";
+  t=t.charAt(0).toUpperCase()+t.slice(1);
+  if(!/[.!?]$/.test(t)) t+=".";
+  return t;
+}
+function minusculeSimple(t){ t=String(t||"").trim();
+  return t ? t.charAt(0).toLowerCase()+t.slice(1) : ""; }
+
 function pretAExporter(){
   for(let k=0;k<8;k++) if(!valide(k)) return false;
   return S.refs.every(r=>!r.telInconnu);
@@ -713,6 +1082,7 @@ function blocage(i){
   }
   if(i===8 && S.refs.some(r=>r.telInconnu))
     return "Il manque le téléphone d'une référence. Le PDF et le Word restent bloqués.";
+  if(i===9 && !pretAExporter()) return "Termine ton CV avant d'écrire ta lettre.";
   return "";
 }
 
@@ -721,12 +1091,14 @@ function blocage(i){
    ===================================================================== */
 function rendreEtape(){
   const e=ETAPES[etape];
-  $("#rang").textContent="Étape "+(etape+1)+" sur 9";
+  $("#rang").textContent="Étape "+(etape+1)+" sur "+ETAPES.length;
   $("#titre").textContent=e.t;
   $("#intro").textContent=e.i;
   compteurLibre=0;
-  $("#corps").innerHTML=({coord:vCoord,obj:vObj,form:vForm,exp:vExp,imp:vImp,
-    comp:vComp,atouts:vAtouts,refs:vRefs,verif:vVerif})[e.id]();
+  $("#corps").innerHTML=mytheHtml(e.id)+({coord:vCoord,obj:vObj,form:vForm,exp:vExp,imp:vImp,
+    comp:vComp,atouts:vAtouts,refs:vRefs,verif:vVerif,lettre:vLettre})[e.id]();
+  allumerSelects();
+  if(e.id==="lettre") initPad();
 }
 
 function vCoord(){ const c=S.coord; return `
@@ -735,15 +1107,15 @@ Ton nom, ta ville, ton téléphone, ton courriel. Rien d'autre.
 Pas de photo, pas d'âge, pas de date de naissance : la loi te protège, un employeur n'a pas le droit de les exiger.</div>
 <div class="duo">
   <div class="champ"><label>Prénom</label>
-    <input type="text" value="${esc(c.prenom)}" oninput="maj('coord.prenom',this.value)"></div>
+    <input type="text" value="${esc(c.prenom)}" oninput="maj('coord.prenom',this.value)" placeholder=" "></div>
   <div class="champ"><label>Nom de famille</label>
-    <input type="text" value="${esc(c.nom)}" oninput="maj('coord.nom',this.value)"></div>
+    <input type="text" value="${esc(c.nom)}" oninput="maj('coord.nom',this.value)" placeholder=" "></div>
 </div>
 <div class="champ"><label>Ville</label>
   <p class="aide">Ta ville suffit. L'employeur veut savoir si tu peux te rendre chez lui.</p>
   <select onchange="majF('coord.ville',this.value)">${opts(VILLES,c.ville,"— Choisir —")}</select></div>
 ${c.ville==="Autre"?`<div class="champ"><label>Nom de ta ville</label>
-  <input type="text" value="${esc(c.villeAutre)}" oninput="maj('coord.villeAutre',this.value)"></div>`:""}
+  <input type="text" value="${esc(c.villeAutre)}" oninput="maj('coord.villeAutre',this.value)" placeholder=" "></div>`:""}
 <div class="champ"><label>Téléphone</label>
   <p class="aide">Écoute ton message de boîte vocale aujourd'hui. Ton nom, une phrase claire : l'employeur laisse le sien.</p>
   <div class="trio">
@@ -753,7 +1125,7 @@ ${c.ville==="Autre"?`<div class="champ"><label>Nom de ta ville</label>
   </div></div>
 <div class="champ"><label>Courriel</label>
   <p class="aide">Prends le format prenom.nom@… Deux minutes à créer, et ton CV se fait lire au complet.</p>
-  <input type="email" value="${esc(c.courriel)}" oninput="maj('coord.courriel',this.value.trim())"></div>`;
+  <input type="email" value="${esc(c.courriel)}" oninput="maj('coord.courriel',this.value.trim())" placeholder=" "></div>`;
 }
 
 function vObj(){
@@ -767,16 +1139,16 @@ Fais tes choix : l'outil assemble l'objectif et l'écrit sur ton CV. Tu vois le 
   <select onchange="choisirDomaine(this.value)">${opts(listeDom,o.domaine,"— Choisir —")}</select></div>
 ${o.domaine==="autre"?`<div class="champ"><label>Écris ton domaine</label>
   <p class="aide">Par exemple : sécurité incendie, aviation, joaillerie.</p>
-  <input type="text" value="${esc(o.domaineAutre)}" oninput="maj('obj.domaineAutre',this.value)"></div>`:""}
+  <input type="text" value="${esc(o.domaineAutre)}" oninput="maj('obj.domaineAutre',this.value)" placeholder=" "></div>`:""}
 ${d&&d.metiers.length?`<div class="champ"><label>Métier visé</label>
   <select onchange="majF('obj.metier',this.value)">${opts(
     d.metiers.map(m=>({v:m.m,l:m.m})).concat([{v:"autre",l:"Autre métier (à écrire)"}]),
     o.metier,"— Choisir —")}</select></div>`:""}
 ${libre?`<div class="champ"><label>Écris le métier visé</label>
-  <input type="text" value="${esc(o.metierAutre)}" oninput="maj('obj.metierAutre',this.value)"></div>
+  <input type="text" value="${esc(o.metierAutre)}" oninput="maj('obj.metierAutre',this.value)" placeholder=" "></div>
 <div class="champ"><label>DEP ou formation que tu vises</label>
   <p class="aide">Le nom du programme, et le centre de formation si tu le connais.</p>
-  <input type="text" value="${esc(o.depAutre)}" oninput="maj('obj.depAutre',this.value)"></div>`:""}
+  <input type="text" value="${esc(o.depAutre)}" oninput="maj('obj.depAutre',this.value)" placeholder=" "></div>`:""}
 ${objOk()?`<div class="champ"><label>Pourquoi ce stage</label>
   <select onchange="majF('obj.motif',+this.value)">${opts(MOTIFS.map((m,i)=>({v:i,l:m})),o.motif)}</select></div>
 <div class="champ"><label>Une entreprise en tête ? (facultatif)</label>
@@ -800,7 +1172,10 @@ function metierVise(){ const o=S.obj;
 function depVise(){ const o=S.obj, d=DOMAINES[o.domaine];
   if(o.domaine==="autre"||o.metier==="autre") return o.depAutre;
   const m=d&&d.metiers.find(x=>x.m===o.metier);
-  return m ? m.dep+" — "+m.c : ""; }
+  if(!m) return "";
+  /* Le centre de formation n'apparaît que si c'en est vraiment un.
+     « à chercher ailleurs en Montérégie » est une note pour l'élève, pas pour l'employeur. */
+  return /^[A-ZÉÈÊÀÇ]/.test(m.c) ? m.dep+" — "+m.c : m.dep; }
 function depCourt(){ const o=S.obj, d=DOMAINES[o.domaine];
   if(o.domaine==="autre"||o.metier==="autre") return o.depAutre;
   const m=d&&d.metiers.find(x=>x.m===o.metier); return m?m.dep:""; }
@@ -814,16 +1189,16 @@ function texteObjectif(){
 }
 
 function vForm(){ const f=S.form; return `
-<div class="avis"><strong>Pourquoi la formation passe avant l'expérience</strong>
-À 16 ans, ce que tu étudies est ce que tu as de plus solide. Un employeur qui lit « pré-DEP » comprend
-tout de suite pourquoi tu es devant lui.</div>
+<div class="avis"><strong>Ce que l'employeur comprend en lisant cette section</strong>
+Que tu es en formation, que tu vises un DEP précis, et que ton stage fait partie de ton programme.
+C'est ce qui explique pourquoi tu es devant lui.</div>
 <div class="champ"><label>Ton école</label>
   <select onchange="majF('form.ecole',this.value)">${opts(ECOLES.map(x=>x.n),f.ecole,"— Choisir —")}</select></div>
 ${f.ecole==="Autre école"?`<div class="duo" style="margin-bottom:18px">
   <div class="champ" style="margin:0"><label>Nom de ton école</label>
-    <input type="text" value="${esc(f.ecoleAutre)}" oninput="maj('form.ecoleAutre',this.value)"></div>
+    <input type="text" value="${esc(f.ecoleAutre)}" oninput="maj('form.ecoleAutre',this.value)" placeholder=" "></div>
   <div class="champ" style="margin:0"><label>Ville de ton école</label>
-    <input type="text" value="${esc(f.villeAutre)}" oninput="maj('form.villeAutre',this.value)"></div>
+    <input type="text" value="${esc(f.villeAutre)}" oninput="maj('form.villeAutre',this.value)" placeholder=" "></div>
 </div>`:""}
 <div class="champ"><label>Années de ta formation</label>
   <p class="aide">De l'année où tu as commencé à celle où tu termines.</p>
@@ -833,13 +1208,7 @@ ${f.ecole==="Autre école"?`<div class="duo" style="margin-bottom:18px">
   </div></div>
 ${listeLibre("form.mentions","Un prix ou une mention (facultatif)",
   "Élève du mois, médaille, brevet de sauveteur, certificat. Quelqu'un d'autre te l'a donné : ça vaut plus que dix adjectifs.",
-  "Ex. : Élève du mois, janvier 2026",3)}
-<div class="bloc"><h3>Ce qui sera écrit</h3>
-  <p style="margin:0 0 4px"><b>${esc(CONFIG.NOM_COURS)} (pré-DEP)</b> — ${esc(f.anD||"____")} à ${esc(f.anF||"____")}</p>
-  <p style="margin:0 0 4px">${esc(ecoleTexte()||"Choisis ton école ci-dessus.")}</p>
-  <p style="margin:0;color:#5A6B7E">${depVise()?"DEP visé : "+esc(depVise()):"Choisis d'abord ton métier à l'étape 2."}</p></div>
-<div class="avis">Tes cartes et attestations (MAPAQ, RCR, SIMDUT, permis de conduire) s'inscrivent
-à l'étape 6, avec tes compétences.</div>`;
+  "Ex. : Élève du mois, janvier 2026",3)}`;
 }
 
 /* ---------- entrées d'expérience et d'implication ---------- */
@@ -884,7 +1253,7 @@ function vExp(){ return `
 <div class="avis"><strong>« Je n'ai jamais travaillé »</strong>
 Faux. Garder des enfants, tondre un gazon, pelleter une entrée, aider au dépanneur de ton oncle,
 promener un chien : c'est du travail, et ça se met sur un CV.</div>
-<div class="avis gouv">Québec.ca recommande au maximum cinq tâches par expérience, avec des verbes d'action,
+<div class="avis">Québec.ca recommande au maximum cinq tâches par expérience, avec des verbes d'action,
 et un classement du plus récent au plus ancien. L'outil trie tes entrées pour toi.</div>
 ${S.exp.map((e,i)=>blocExp(e,i)).join("")}
 ${S.exp.length<3?`<button class="ajout" onclick="S.exp.push(nouvelleExp());rendre()">+ Ajouter une expérience</button>`:""}`;
@@ -898,11 +1267,11 @@ function blocExp(e,i){
     <select onchange="choisirExp(${i},this.value)">${opts(liste,e.type,"— Choisir —")}</select></div>
   ${e.type==="autre"?`<div class="champ"><label>Titre de l'expérience</label>
     <p class="aide">Comment tu appellerais ce que tu faisais. Ex. : Préposé au lave-auto.</p>
-    <input type="text" value="${esc(e.typeAutre)}" oninput="S.exp[${i}].typeAutre=this.value;rendreLeger()"></div>`:""}
+    <input type="text" value="${esc(e.typeAutre)}" oninput="S.exp[${i}].typeAutre=this.value;rendreLeger()" placeholder=" "></div>`:""}
   ${e.type?`
   <div class="champ"><label>Pour qui ou avec qui</label>
     <p class="aide">Un nom d'entreprise, d'organisme, de famille (« Famille Dubé ») ou « Travail autonome ».</p>
-    <input type="text" value="${esc(e.org)}" oninput="S.exp[${i}].org=this.value;rendreLeger()"></div>
+    <input type="text" value="${esc(e.org)}" oninput="S.exp[${i}].org=this.value;rendreLeger()" placeholder=" "></div>
   ${champsDates(e,"S.exp["+i+"]")}
   ${blocTaches(e,EXPERIENCES,chemin,chemin+".autres",3)}`:""}
   </div>`;
@@ -928,10 +1297,10 @@ Je n'ai aucune implication à inscrire</label>`;
   <div class="champ"><label>Type</label>
     <select onchange="choisirImp(this.value)">${opts(liste,p.type,"— Choisir —")}</select></div>
   ${p.type==="autre"?`<div class="champ"><label>Titre de ton implication</label>
-    <input type="text" value="${esc(p.typeAutre)}" oninput="S.imp.typeAutre=this.value;rendreLeger()"></div>`:""}
+    <input type="text" value="${esc(p.typeAutre)}" oninput="S.imp.typeAutre=this.value;rendreLeger()" placeholder=" "></div>`:""}
   ${p.type?`
   <div class="champ"><label>Organisme, école ou équipe</label>
-    <input type="text" value="${esc(p.org)}" oninput="S.imp.org=this.value;rendreLeger()"></div>
+    <input type="text" value="${esc(p.org)}" oninput="S.imp.org=this.value;rendreLeger()" placeholder=" "></div>
   ${champsDates(p,"S.imp")}
   ${blocTaches(p,IMPLICATIONS,"imp","imp.autres",2)}`:""}
 </div>
@@ -982,13 +1351,13 @@ ${listeLibre("comp.cartesAutres","Une autre carte ou formation",
 function vAtouts(){
   const a=S.atouts;
   return `
-<div class="avis gouv">Québec.ca appelle cette section « Renseignements supplémentaires » : langues,
+<div class="avis">Québec.ca appelle cette section « Renseignements supplémentaires » : langues,
 connaissances informatiques, cartes de qualification, centres d'intérêt.</div>
 
 <div class="champ"><label>Ta langue maternelle</label>
   <select onchange="majF('atouts.maternelle',this.value)">${opts(LANGUES,a.maternelle,"— Choisir —")}</select></div>
 ${a.maternelle==="autre"?`<div class="champ"><label>Écris ta langue maternelle</label>
-  <input type="text" value="${esc(a.maternelleAutre)}" oninput="maj('atouts.maternelleAutre',this.value)"></div>`:""}
+  <input type="text" value="${esc(a.maternelleAutre)}" oninput="maj('atouts.maternelleAutre',this.value)" placeholder=" "></div>`:""}
 
 <div class="champ"><label>Autres langues que tu parles</label>
   <p class="aide">Ajoute-les une par une, avec ton vrai niveau. Un employeur peut te faire dire deux phrases en entrevue.</p>
@@ -1027,28 +1396,28 @@ function vRefs(){ return `
 <div class="avis"><strong>Deux appels à faire aujourd'hui</strong>
 Choisis deux personnes en dehors de ta famille, et demande-leur si elles acceptent.
 Une personne prévenue répond bien quand l'employeur appelle.</div>
-<div class="avis gouv">Québec.ca recommande de <b>ne pas inscrire tes références sur le CV</b>, mais d'apporter
+<div class="avis">Québec.ca recommande de <b>ne pas inscrire tes références sur le CV</b>, mais d'apporter
 la liste en entrevue. Ton CV affichera donc « Références disponibles sur demande », et l'outil te prépare
 une feuille séparée à imprimer.</div>
 ${S.refs.map((r,i)=>`<div class="bloc"><h3>Référence ${i+1}</h3>
   <div class="duo">
     <div class="champ"><label>Prénom</label>
-      <input type="text" value="${esc(r.prenom)}" oninput="S.refs[${i}].prenom=this.value;rendreLeger()"></div>
+      <input type="text" value="${esc(r.prenom)}" oninput="S.refs[${i}].prenom=this.value;rendreLeger()" placeholder=" "></div>
     <div class="champ"><label>Nom</label>
-      <input type="text" value="${esc(r.nom)}" oninput="S.refs[${i}].nom=this.value;rendreLeger()"></div>
+      <input type="text" value="${esc(r.nom)}" oninput="S.refs[${i}].nom=this.value;rendreLeger()" placeholder=" "></div>
   </div>
   <div class="champ"><label>Ton lien avec cette personne</label>
     <select onchange="S.refs[${i}].lien=this.value;rendre()">${opts(LIENS_REF,r.lien,"— Choisir —")}</select></div>
   ${r.lien==="Autre"?`<div class="champ"><label>Précise ton lien</label>
-    <input type="text" value="${esc(r.lienAutre)}" oninput="S.refs[${i}].lienAutre=this.value;rendreLeger()"></div>`:""}
+    <input type="text" value="${esc(r.lienAutre)}" oninput="S.refs[${i}].lienAutre=this.value;rendreLeger()" placeholder=" "></div>`:""}
   <div class="champ"><label>Précision <span style="font-weight:400;color:var(--acier)">— facultatif</span></label>
     <p class="aide">Où, ou à quel titre. Ex. : « au Subway de la rue Saint-Charles », « en français, 3e secondaire ».</p>
-    <input type="text" value="${esc(r.precision)}" oninput="S.refs[${i}].precision=this.value;rendreLeger()"></div>
+    <input type="text" value="${esc(r.precision)}" oninput="S.refs[${i}].precision=this.value;rendreLeger()" placeholder=" "></div>
   <div class="champ"><label>Téléphone</label>
     <div class="trio">
-      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel1)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel1=this.value.replace(/\\D/g,'');rendreLeger()">
-      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel2)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel2=this.value.replace(/\\D/g,'');rendreLeger()">
-      <input type="tel" inputmode="numeric" maxlength="4" value="${esc(r.tel3)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel3=this.value.replace(/\\D/g,'');rendreLeger()">
+      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel1)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel1=this.value.replace(/\\D/g,'');rendreLeger()" placeholder=" ">
+      <input type="tel" inputmode="numeric" maxlength="3" value="${esc(r.tel2)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel2=this.value.replace(/\\D/g,'');rendreLeger()" placeholder=" ">
+      <input type="tel" inputmode="numeric" maxlength="4" value="${esc(r.tel3)}" ${r.telInconnu?'disabled':''} oninput="S.refs[${i}].tel3=this.value.replace(/\\D/g,'');rendreLeger()" placeholder=" ">
     </div>
     <label class="case ${r.telInconnu?'coche':''}" style="margin-top:8px">
       <input type="checkbox" ${r.telInconnu?'checked':''} onchange="S.refs[${i}].telInconnu=this.checked;rendre()">
@@ -1262,6 +1631,29 @@ function rendreApercu(){
     (x.prevenue?'  ·  Personne prévenue':'')+'</p></div>'; });
   r+='<p style="margin-top:1.4em;font-size:.88em;color:#444">À apporter en entrevue. Ne pas joindre au CV.</p>';
   $("#feuille-refs").innerHTML=r;
+  rendreLettre();
+}
+
+function rendreLettre(){
+  const f=$("#feuille-lettre"), t=$("#titre-lettre");
+  if(!f) return;
+  const vu = pretAExporter();
+  f.style.display = vu?"block":"none";
+  if(t) t.style.display = vu?"block":"none";
+  if(!vu) return;
+  const L=texteLettre();
+  let h='<p class="l-date">'+esc(L.ville?L.ville+", le "+L.date:L.date)+'</p>';
+  if(L.pour) h+='<p class="l-dest">'+L.pour.split("\n").map(esc).join("<br>")+'</p>';
+  h+='<p class="l-objet"><b>Objet :</b> '+esc(L.objet)+'</p>';
+  h+='<p class="l-salut">'+esc(L.appel)+'</p>';
+  h+=L.paras.map(pz=>'<p class="l-para">'+esc(pz)+'</p>').join("");
+  h+='<p class="l-salut">'+esc(L.salutation)+'</p>';
+  const sig=signatureHtml(58);
+  if(sig) h+='<div class="l-sig-bloc">'+sig+'</div>';
+  h+='<p class="l-sign">'+esc(L.nom)+'</p>';
+  if(L.coord.length) h+='<p class="l-coord">'+L.coord.map(esc).join("<br>")+'</p>';
+  h+='<p class="l-pj">'+esc(L.pj)+'</p>';
+  f.innerHTML=h;
 }
 
 /* =====================================================================
@@ -1292,6 +1684,7 @@ function textesEleve(){
   S.atouts.infoAutres.forEach(x=>pousser(x,6));
   S.atouts.interetsAutres.forEach(x=>pousser(x,6));
   S.refs.forEach(r=>{ pousser(r.prenom,7); pousser(r.nom,7); pousser(r.lienAutre,7); pousser(r.precision,7); });
+  ["personne","titre","entreprise","exemple"].forEach(k=>pousser(S.lettre[k],9));
   return t;
 }
 function pieges(){
@@ -1362,8 +1755,8 @@ Une page reste la norme à ton âge, mais tu peux exporter comme ça si tu y tie
 </div>
 
 ${(function(){ const pg=pieges(); if(!pg.length) return `<div class="bloc"><h3>Pièges d'écriture</h3>
-  <p class="aide" style="margin:0">Rien de détecté. L'outil ne connaît que six erreurs fréquentes :
-  fais quand même relire ton CV par quelqu'un.</p></div>`;
+  <p class="aide" style="margin:0">Aucune erreur repérée pour l'instant. L'outil ne vérifie que six
+  erreurs courantes — il ne lit pas ton texte comme un humain. Fais relire ton CV par quelqu'un.</p></div>`;
   return `<div class="bloc"><h3>Pièges d'écriture — ${pg.length} à vérifier</h3>
   <p class="aide">Ce ne sont pas toujours des fautes. Clique sur une ligne pour aller voir.</p>
   <ul class="grille">${pg.map(x=>`<li onclick="allerA(${x[1]})"><b>!</b><span>${esc(x[0])}</span></li>`).join("")}</ul>
@@ -1396,7 +1789,8 @@ ${(function(){ const pg=pieges(); if(!pg.length) return `<div class="bloc"><h3>P
 }
 function imprimer(cls){
   const titre=document.title;
-  document.title = cls==="pr-ref" ? nomFichier()+"_references" : nomFichier();
+  document.title = cls==="pr-ref" ? nomFichier()+"_references"
+                 : cls==="pr-lettre" ? nomFichier()+"_lettre" : nomFichier();
   document.body.classList.add(cls);
   window.print();
   setTimeout(()=>{ document.body.classList.remove(cls); document.title=titre; },500);
@@ -1411,7 +1805,7 @@ function crc32(b){let c=0xFFFFFFFF;for(let i=0;i<b.length;i++)c=CRC[(c^b[i])&0xF
 function zip(files){
   const enc=new TextEncoder(), loc=[], cen=[]; let off=0,n=0;
   for(const f of files){
-    const nb=enc.encode(f.n), data=enc.encode(f.d), crc=crc32(data), sz=data.length;
+    const nb=enc.encode(f.n), data=f.bin?f.bin:enc.encode(f.d), crc=crc32(data), sz=data.length;
     const lh=new DataView(new ArrayBuffer(30));
     lh.setUint32(0,0x04034b50,true); lh.setUint16(4,20,true); lh.setUint16(6,0x0800,true);
     lh.setUint32(14,crc,true); lh.setUint32(18,sz,true); lh.setUint32(22,sz,true); lh.setUint16(26,nb.length,true);
@@ -1474,6 +1868,10 @@ function docXml(){
     d.supp.forEach(l=>{ b+=wLigne(l.k+" : "+l.v); }); }
   if(d.interets.length){ b+=wTitre("Centres d'intérêt"); b+=wLigne(d.interets.join("  ·  ")); }
   b+=wTitre("Références"); b+=wLigne("Références disponibles sur demande.");
+  return enveloppeLettre(b);
+}
+/* Page lettre US, marges de 1,9 cm — les mêmes que le PDF, pour le CV comme pour la lettre. */
+function enveloppeLettre(b){
   return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
     '<w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>'+b+
     '<w:sectPr><w:pgSz w:w="12240" w:h="15840"/>'+
@@ -1488,11 +1886,79 @@ function nomFichier(){
     .replace(/[^A-Za-z0-9]+/g,"_").replace(/^_+|_+$/g,"");
   return "CV_"+(n||"eleve");
 }
-function exportWord(){
+function lettreXml(){
+  const L=texteLettre();
+  const P=(t,o)=>wP(wR(t,o||{}),'<w:pPr><w:spacing w:after="240"/></w:pPr>');
+  let b="";
+  b+=P(L.ville?L.ville+", le "+L.date:L.date);
+  L.pour.split("\n").filter(Boolean).forEach(x=>{ b+=P(x,{b:1}); });
+  b+=wP(wR("Objet : ",{b:1})+wR(L.objet),'<w:pPr><w:spacing w:after="240"/></w:pPr>');
+  b+=P(L.appel);
+  L.paras.forEach(x=>{ b+=P(x); });
+  b+=P(L.salutation);
+  const sg=S.lettre.sig||{};
+  if(sg.type==="trace" && sg.d) b+=wImage();
+  else b+=wSignatureStyle();
+  b+=wP(wR(L.nom,{b:1}),'<w:pPr><w:spacing w:after="0"/></w:pPr>');
+  L.coord.forEach((x,i)=>{ b+=wP(wR(x),
+    '<w:pPr><w:spacing w:after="'+(i===L.coord.length-1?240:0)+'"/></w:pPr>'); });
+  b+=P(L.pj);
+  return b;
+}
+function exportLettreWord(){
+  if(!pretAExporter()) return;
+  telecharger(zip(fichiersDocx(enveloppeLettre(lettreXml()),22,pngSignature())), nomFichier()+"_lettre.docx");
+}
+/* Un seul emballage .docx pour le CV et pour la lettre : même police, mêmes marges,
+   même fichier de styles. Seul le corps change. */
+/* La signature dessinée part dans le .docx comme une vraie image : on la rejoue sur un
+   canevas hors écran, on récupère les octets du PNG, et on les place dans word/media.
+   Un style tout fait, lui, reste du texte — Word connaît les mêmes polices que le poste. */
+function pngSignature(){
+  const sg=S.lettre.sig||{};
+  if(sg.type!=="trace" || !sg.d) return null;
+  try{
+    const cv=document.createElement("canvas"); cv.width=1200; cv.height=360;
+    const ctx=cv.getContext("2d"); ctx.scale(2,2);
+    ctx.strokeStyle="#16324F"; ctx.lineWidth=3.4; ctx.lineCap="round"; ctx.lineJoin="round";
+    ctx.stroke(new Path2D(sg.d));
+    const b64=cv.toDataURL("image/png").split(",")[1];
+    const bin=atob(b64), u=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+    return u;
+  }catch(e){ return null; }
+}
+function wImage(){
+  return '<w:p><w:pPr><w:spacing w:before="200" w:after="0"/></w:pPr><w:r><w:drawing>'+
+    '<wp:inline distT="0" distB="0" distL="0" distR="0" '+
+    'xmlns:wp="http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing">'+
+    '<wp:extent cx="2011680" cy="603504"/><wp:docPr id="1" name="Signature"/>'+
+    '<a:graphic xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><a:graphicData '+
+    'uri="http://schemas.openxmlformats.org/drawingml/2006/picture">'+
+    '<pic:pic xmlns:pic="http://schemas.openxmlformats.org/drawingml/2006/picture">'+
+    '<pic:nvPicPr><pic:cNvPr id="1" name="Signature"/><pic:cNvPicPr/></pic:nvPicPr>'+
+    '<pic:blipFill><a:blip xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" '+
+    'r:embed="rId2"/><a:stretch><a:fillRect/></a:stretch></pic:blipFill>'+
+    '<pic:spPr><a:xfrm><a:off x="0" y="0"/><a:ext cx="2011680" cy="603504"/></a:xfrm>'+
+    '<a:prstGeom prst="rect"><a:avLst/></a:prstGeom></pic:spPr></pic:pic>'+
+    '</a:graphicData></a:graphic></wp:inline></w:drawing></w:r></w:p>';
+}
+function wSignatureStyle(){
+  const sg=S.lettre.sig||{};
+  if(sg.type!=="style") return "";
+  const st=STYLES_SIG[sg.i||0];
+  const police=st.f.split(",")[0].replace(/"/g,"");
+  const nom=(S.coord.prenom+" "+S.coord.nom).trim();
+  return '<w:p><w:pPr><w:spacing w:before="200" w:after="0"/></w:pPr><w:r><w:rPr>'+
+    '<w:rFonts w:ascii="'+X(police)+'" w:hAnsi="'+X(police)+'"/><w:i/><w:color w:val="16324F"/>'+
+    '<w:sz w:val="40"/><w:szCs w:val="40"/></w:rPr><w:t xml:space="preserve">'+X(nom)+'</w:t></w:r></w:p>';
+}
+function fichiersDocx(corps,taille,png){
+  const sz=taille||Math.round(20*ECH);
   const styles='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'+
     '<w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:docDefaults>'+
     '<w:rPrDefault><w:rPr><w:rFonts w:ascii="Arial" w:hAnsi="Arial" w:cs="Arial"/>'+
-    '<w:sz w:val="'+Math.round(20*ECH)+'"/><w:szCs w:val="'+Math.round(20*ECH)+'"/>'+
+    '<w:sz w:val="'+sz+'"/><w:szCs w:val="'+sz+'"/>'+
     '<w:lang w:val="fr-CA"/></w:rPr></w:rPrDefault>'+
     '<w:pPrDefault><w:pPr><w:spacing w:after="60" w:line="240" w:lineRule="auto"/></w:pPr></w:pPrDefault>'+
     '</w:docDefaults></w:styles>';
@@ -1511,9 +1977,20 @@ function exportWord(){
     '<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">'+
     '<Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>'+
     '</Relationships>';
-  telecharger(zip([{n:"[Content_Types].xml",d:ct},{n:"_rels/.rels",d:rels},
-    {n:"word/document.xml",d:docXml()},{n:"word/_rels/document.xml.rels",d:drels},
-    {n:"word/styles.xml",d:styles}]), nomFichier()+".docx");
+  const f=[{n:"[Content_Types].xml",d:ct},{n:"_rels/.rels",d:rels},
+    {n:"word/document.xml",d:corps},{n:"word/_rels/document.xml.rels",d:drels},
+    {n:"word/styles.xml",d:styles}];
+  if(png){
+    f[0].d=ct.replace('<Default Extension="xml" ContentType="application/xml"/>',
+      '<Default Extension="xml" ContentType="application/xml"/><Default Extension="png" ContentType="image/png"/>');
+    f[3].d=drels.replace("</Relationships>",
+      '<Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image" Target="media/signature.png"/></Relationships>');
+    f.push({n:"word/media/signature.png",bin:png});
+  }
+  return f;
+}
+function exportWord(){
+  telecharger(zip(fichiersDocx(docXml())), nomFichier()+".docx");
 }
 function telecharger(blob,nom){
   const u=URL.createObjectURL(blob), a=document.createElement("a");
@@ -1542,6 +2019,13 @@ function migrer(o){
   if(o.form && !Array.isArray(o.form.mentions)) o.form.mentions=[];
   if(o.obj && typeof o.obj.entreprise!=="string") o.obj.entreprise="";
   if(!o.verif || typeof o.verif!=="object") o.verif={relu:false,defendable:false};
+  if(!o.mythes || typeof o.mythes!=="object") o.mythes={};
+  if(!o.lettre || typeof o.lettre!=="object") o.lettre={};
+  if(typeof o.lettre.civilite!=="string") o.lettre.civilite="Je ne sais pas";
+  ["personne","titre","adresse","connu","entreprise","exemple"].forEach(k=>{
+    if(typeof o.lettre[k]!=="string") o.lettre[k]=""; });
+  if(!Array.isArray(o.lettre.qualites)) o.lettre.qualites=[];
+  if(!o.lettre.sig || typeof o.lettre.sig!=="object") o.lettre.sig={type:"",d:"",i:0};
   o.v=4; return o;
 }
 function sauver(){ try{ localStorage.setItem(CLE,JSON.stringify(S)); }catch(e){} }
@@ -1604,42 +2088,240 @@ function toutEffacer(){
 }
 
 /* =====================================================================
+   ÉTAPE 10 — LA LETTRE
+   ===================================================================== */
+function jetons(liste,fn,titre){
+  return `<p class="aide" style="margin-bottom:5px">${titre}</p>
+  <div class="cases">${liste.map(x=>`<label class="case" onclick="${fn}('${jq(x)}')">${esc(x)}</label>`).join("")}</div>`;
+}
+function ajouterA(cle,t,espace){
+  const v=S.lettre[cle]||"";
+  S.lettre[cle]=(v && !/\s$/.test(v) ? v+" " : v)+t+(espace?" ":"");
+  rendre();
+}
+function ajouterEntreprise(t){ ajouterA("entreprise",t); }
+function ajouterProfil(t){ ajouterA("exemple",t); }
+function ajouterVerbe(t){ ajouterA("exemple",t,true); }
+function basculeQualiteLettre(q){
+  const a=S.lettre.qualites, i=a.indexOf(q);
+  if(i>=0) a.splice(i,1); else { if(a.length>=2) a.shift(); a.push(q); }
+  rendre();
+}
+/* Mise à jour sans redessiner l'étape : sinon le curseur saute à chaque frappe. */
+function majLettre(cle,val){
+  S.lettre[cle]=val;
+  const c=$("#cpt-"+cle), n=motsDe(val);
+  if(c){ c.textContent=n+" mot"+(n>1?"s":""); c.className="compteur "+(n>=10?"ok":""); }
+  const o=originalite(), g=$("#jauge-orig"), t=$("#cpt-orig");
+  if(g) g.style.width=Math.min(100,o)+"%";
+  if(t){ t.textContent=o+" % de mots à toi"; t.className="compteur "+(o>=35?"ok":""); }
+  rendreLeger();
+}
+/* ---------- Le pavé où l'élève signe ----------
+   Le canevas est redessiné à chaque rendu de l'étape : on réattache les écouteurs et
+   on redessine le tracé conservé. Les coordonnées sont normalisées sur 600 x 180,
+   pour que la signature garde la même allure quelle que soit la taille de l'écran. */
+let traitsSig=[], traitCourant=null;
+function initPad(){
+  const cv=$("#pad"); if(!cv || !cv.getContext) return;
+  const ctx=cv.getContext("2d"); if(!ctx) return;
+  const sg=S.lettre.sig||{};
+  traitsSig = (sg.type==="trace" && sg.d) ? traitsDepuisChemin(sg.d) : [];
+  dessinerPad(ctx,cv);
+  const pos=ev=>{ const r=cv.getBoundingClientRect();
+    return [ (ev.clientX-r.left)/r.width*600, (ev.clientY-r.top)/r.height*180 ]; };
+  cv.onpointerdown=ev=>{ ev.preventDefault(); cv.setPointerCapture(ev.pointerId);
+    traitCourant=[pos(ev)]; traitsSig.push(traitCourant); };
+  cv.onpointermove=ev=>{ if(!traitCourant) return; ev.preventDefault();
+    const p=pos(ev), d=traitCourant[traitCourant.length-1];
+    if(Math.hypot(p[0]-d[0],p[1]-d[1])<3) return;
+    traitCourant.push(p); dessinerPad(ctx,cv); };
+  const fin=()=>{ if(!traitCourant) return; traitCourant=null; enregistrerSig(); };
+  cv.onpointerup=fin; cv.onpointerleave=fin; cv.onpointercancel=fin;
+}
+function dessinerPad(ctx,cv){
+  ctx.clearRect(0,0,600,180);
+  ctx.strokeStyle="#D9DEE4"; ctx.lineWidth=1.5;
+  ctx.beginPath(); ctx.moveTo(30,142); ctx.lineTo(570,142); ctx.stroke();
+  ctx.strokeStyle="#16324F"; ctx.lineWidth=3.4; ctx.lineCap="round"; ctx.lineJoin="round";
+  traitsSig.forEach(t=>{ if(t.length<2) return;
+    ctx.beginPath(); ctx.moveTo(t[0][0],t[0][1]);
+    for(let i=1;i<t.length;i++) ctx.lineTo(t[i][0],t[i][1]);
+    ctx.stroke(); });
+}
+/* On allège le tracé avant de l'enregistrer : le code de reprise doit rester
+   copiable dans un courriel. Un point tous les trois pixels suffit largement
+   à l'oeil, et on plafonne à 120 points par trait. */
+function alleger(t){
+  if(t.length<=90) return t;
+  const pas=t.length/90, out=[];
+  for(let i=0;i<90;i++) out.push(t[Math.floor(i*pas)]);
+  out.push(t[t.length-1]); return out;
+}
+function cheminSig(traits){
+  return traits.filter(t=>t.length>1).map(alleger).map(t=>
+    "M"+t.map(p=>Math.round(p[0])+","+Math.round(p[1])).join("L")).join(" ");
+}
+function traitsDepuisChemin(d){
+  return String(d||"").split("M").filter(Boolean).map(t=>
+    t.trim().split("L").map(pz=>pz.split(",").map(Number)));
+}
+function enregistrerSig(){
+  const d=cheminSig(traitsSig);
+  S.lettre.sig = d ? {type:"trace",d:d,i:0} : {type:"",d:"",i:0};
+  rendreLeger();
+}
+function effacerSig(){ traitsSig=[]; S.lettre.sig={type:"",d:"",i:0}; rendre(); }
+function choisirStyleSig(i){ S.lettre.sig={type:"style",d:"",i:i}; rendre(); }
+
+function objectifPara(n,titre,but){
+  return `<h3>${n}. ${titre}</h3>
+  <p class="aide" style="margin:0 0 10px"><b>But de ce paragraphe :</b> ${but}</p>`;
+}
+function vLettre(){
+  if(!pretAExporter()) return `
+<div class="avis"><strong>Ton CV d'abord</strong>
+La lettre reprend ce que tu as déjà écrit. Termine les neuf premières étapes et reviens ici.</div>
+<button class="btn sec" onclick="allerA(8)">Aller à la vérification</button>`;
+
+  const l=S.lettre, o=originalite(), qs=S.comp.qualites;
+  const cpt=(cle)=>{ const n=motsDe(l[cle]);
+    return `<div class="compteur ${n>=10?'ok':''}" id="cpt-${cle}">${n} mot${n>1?'s':''}</div>`; };
+
+  return `
+<div class="avis"><strong>Une lettre, quatre paragraphes, un but chacun</strong>
+C'est la structure recommandée par Québec.ca. Le premier et le dernier sont déjà écrits à partir
+de ton CV. Toi, tu rédiges les deux du milieu. Rien n'est obligatoire : tu peux imprimer en tout temps.</div>
+
+<div class="bloc"><h3>L'en-tête : à qui tu écris</h3>
+<p class="aide" style="margin:0 0 10px"><b>But :</b> que la lettre arrive à la bonne personne,
+et qu'on voie tout de suite qu'elle a été écrite pour cette entreprise-là.</p>
+<div class="duo">
+  <select onchange="majF('lettre.civilite',this.value)">${opts(["Je ne sais pas","Madame","Monsieur"],l.civilite||"Je ne sais pas")}</select>
+  <input type="text" value="${esc(l.personne)}" oninput="maj('lettre.personne',this.value)"
+    placeholder="Nom de famille (facultatif)">
+</div>
+<div class="champ" style="margin-top:12px"><label>Son titre dans l'entreprise (facultatif)</label>
+  <p class="aide">Ex. : propriétaire, gérante, chef d'atelier. Demande-le au téléphone si tu ne le sais pas.</p>
+  <input type="text" value="${esc(l.titre)}" oninput="maj('lettre.titre',this.value)"
+    placeholder="Ex. : gérante"></div>
+<div class="champ"><label>Adresse de l'entreprise</label>
+  <p class="aide">Numéro et rue sur la première ligne, ville et code postal sur la deuxième.</p>
+  <textarea rows="2" oninput="maj('lettre.adresse',this.value)"
+    placeholder="1250, rue Saint-Charles Ouest&#10;Longueuil (Québec)  J4K 2S5">${esc(l.adresse)}</textarea></div>
+</div>
+
+<div class="bloc">${objectifPara(1,"L'introduction",
+  "dire qui tu es, ce que tu demandes, et comment tu connais cette entreprise. Ce paragraphe est écrit pour toi — tu choisis seulement la dernière phrase.")}
+<p class="aide">Comment connais-tu cette entreprise ?</p>
+<div class="cases">${CONNU.map(x=>`<label class="case ${l.connu===x?'coche':''}"
+  onclick="majF('lettre.connu', S.lettre.connu==='${jq(x)}' ? '' : '${jq(x)}')">${esc(x)}</label>`).join("")}</div>
+</div>
+
+<div class="bloc">${objectifPara(2,"L'entreprise",
+  "montrer que tu t'adresses à eux et pas à n'importe qui. Deux phrases suffisent. Ne parle pas encore de toi.")}
+${jetons(AMORCES_ENTREPRISE,"ajouterEntreprise","Clique un début de phrase, puis termine-le :")}
+<textarea class="saisie" rows="3" oninput="majLettre('entreprise',this.value)"
+  placeholder="Ex. : Ce qui me plaît chez vous, c'est que votre garage répare surtout des voitures anciennes.">${esc(l.entreprise)}</textarea>
+${cpt("entreprise")}</div>
+
+<div class="bloc">${objectifPara(3,"Toi",
+  "faire le lien entre ce que tu as déjà fait et ce que le métier demande. Un exemple concret vaut plus que trois qualités.")}
+<p class="aide">Deux qualités, choisies parmi celles de ton CV :</p>
+<div class="cases">${qs.map(q=>`<label class="case ${l.qualites.includes(q)?'coche':''}"
+  onclick="basculeQualiteLettre('${jq(q)}')">${esc(q)}</label>`).join("")}</div>
+<div class="compteur ${l.qualites.length===2?'ok':''}">${l.qualites.length} qualité(s) sur 2</div>
+<div style="margin-top:14px">
+${jetons(AMORCES_PROFIL,"ajouterProfil","Clique un début de phrase, puis termine-le :")}
+${jetons(VERBES_LETTRE,"ajouterVerbe","Des verbes d'action à insérer :")}
+<textarea class="saisie" rows="3" oninput="majLettre('exemple',this.value)"
+  placeholder="Ex. : Par exemple, l'été dernier, j'ai tondu le gazon de six voisins toutes les semaines sans qu'on ait à me le rappeler.">${esc(l.exemple)}</textarea>
+${cpt("exemple")}</div></div>
+
+<div class="bloc">${objectifPara(4,"La conclusion",
+  "remercier, dire que tu es disponible pour une rencontre, et laisser tes coordonnées. Écrit pour toi à partir de ton CV.")}
+<p class="aide" style="margin:0">Rien à remplir ici. Vérifie seulement que ton téléphone et ton courriel
+sont bons à l'étape 1 — c'est par là qu'on va te rappeler.</p></div>
+
+<div class="bloc"><h3>Ta signature</h3>
+<p class="aide" style="margin:0 0 10px"><b>But :</b> une lettre signée se lit comme une lettre
+adressée à quelqu'un. Non signée, elle a l'air d'un formulaire.</p>
+<p class="aide">Signe avec ton doigt sur la tablette, ou avec la souris. Prends ton temps,
+tu peux recommencer autant de fois que tu veux.</p>
+<canvas id="pad" width="600" height="180" class="pad"></canvas>
+<div class="rangee">
+  <button class="btn sec" onclick="effacerSig()">Effacer</button>
+  <span class="aide" style="margin:0">${S.lettre.sig.type==="trace"?"Signature enregistrée.":"Rien de signé pour l'instant."}</span>
+</div>
+<p class="aide" style="margin-top:14px">Ou choisis un style tout fait, écrit avec ton nom :</p>
+<div class="cases">${STYLES_SIG.map((st,i)=>`<label class="case ${S.lettre.sig.type==="style"&&S.lettre.sig.i===i?'coche':''}"
+  onclick="choisirStyleSig(${i})"><span style="font-family:${st.f};font-size:1.5em;transform:skewX(${st.i}deg);display:inline-block">${esc(st.n)}</span></label>`).join("")}</div>
+<p class="aide" style="margin-top:8px">Une signature dessinée à la main vaut mieux qu'un style tout fait :
+c'est la tienne, et elle ne ressemble à celle de personne d'autre.</p>
+</div>
+
+<div class="bloc"><h3>Est-ce que ta lettre te ressemble ?</h3>
+<p class="aide">Cette jauge compte les mots que tu as écrits toi-même. Le reste, ce sont les formules
+d'usage. Plus elle monte, moins ta lettre ressemble à celle du voisin.</p>
+<div class="jauge"><div class="jauge-plein" id="jauge-orig" style="width:${Math.min(100,o)}%"></div></div>
+<div class="compteur ${o>=35?'ok':''}" id="cpt-orig">${o} % de mots à toi</div></div>
+
+<div class="bloc"><h3>Sortir ta lettre</h3>
+  <p>Une page, séparée du CV. Les deux s'envoient ensemble.</p>
+  <button class="btn" onclick="imprimer('pr-lettre')">Imprimer ou enregistrer en PDF</button>
+  <button class="btn sec" onclick="exportLettreWord()">Télécharger le .docx</button>
+  <p class="aide" style="margin-top:12px">Dans la fenêtre d'impression : <b>Destination → Enregistrer en PDF</b>,
+  et laisse <b>Marges → Par défaut</b>.</p>
+  <p class="aide">Avant chaque envoi : change le nom et l'adresse de l'entreprise, puis réimprime les deux.</p></div>`;
+}
+
+/* =====================================================================
    NAVIGATION
    ===================================================================== */
+/* Une liste déroulante n'a pas d'équivalent de :placeholder-shown : on marque
+   nous-mêmes celles où un choix a été fait. */
+function allumerSelects(){
+  const c=$("#corps"); if(!c||!c.querySelectorAll) return;
+  c.querySelectorAll("select").forEach(sel=>{
+    sel.classList.toggle("rempli", !!sel.value);
+    sel.addEventListener("change",()=>sel.classList.toggle("rempli", !!sel.value));
+  });
+}
 function rendreRail(){
   $("#etapes").innerHTML=ETAPES.map((e,i)=>{
     const ok=valide(i), acc=accessible(i);
     return `<li class="etape ${i===etape?'active':''} ${ok&&i!==etape?'fait':''} ${acc?'':'verrou'}"
       onclick="allerA(${i})"><span class="num">${ok&&i!==etape?'✓':i+1}</span><span class="lib">${e.t}</span></li>`;
   }).join("");
-  let n=0; for(let i=0;i<9;i++) if(valide(i)) n++;
-  $("#jauge-plein").style.width=Math.round(n/9*100)+"%";
-  $("#jauge-txt").textContent=n+" étape"+(n>1?"s":"")+" sur 9";
+  let n=0; for(let i=0;i<ETAPES.length;i++) if(valide(i)) n++;
+  $("#jauge-plein").style.width=Math.round(n/ETAPES.length*100)+"%";
+  $("#jauge-txt").textContent=n+" étape"+(n>1?"s":"")+" sur "+ETAPES.length;
 }
 function majBarre(){
   const ok=valide(etape), b=blocage(etape);
   $("#btn-prec").style.visibility=etape===0?"hidden":"visible";
   const s=$("#btn-suiv");
-  s.disabled=!ok||etape===8;
-  s.textContent=etape===7?"Vérifier mon CV":"Continuer";
-  s.style.visibility=etape===8?"hidden":"visible";
+  const dernier=ETAPES.length-1;
+  s.disabled=!ok||etape===dernier;
+  s.textContent=etape===7?"Vérifier mon CV":(etape===8?"Écrire ma lettre":"Continuer");
+  s.style.visibility=etape===dernier?"hidden":"visible";
   const et=$("#etat");
   et.className="etat "+(ok?"ok":"bloque");
-  et.textContent=ok?(etape===8?"Ton CV est prêt.":"Étape complète."):b;
+  et.textContent=ok?(etape===8?"Ton CV est prêt.":(etape===dernier?"Ta lettre est prête.":"Étape complète.")):b;
 }
 function rendreLeger(){ rendreRail(); rendreApercu(); majBarre(); sauver(); }
 function rendre(){ rendreApercu(); rendreEtape(); rendreLeger(); }
 function allerA(i){
   if(i===etape) return;
   if(!accessible(i)){
-    const k=[0,1,2,3,4,5,6,7,8].find(x=>!valide(x));
+    const k=ETAPES.map((e,x)=>x).find(x=>!valide(x));
     etape=k; rendre();
     $("#etat").textContent="Termine cette étape avant de passer à la suivante.";
     return;
   }
   etape=i; $("#centre").scrollTop=0; $("#rail").classList.remove("on"); rendre();
 }
-function allerSuiv(){ if(valide(etape)&&etape<8) allerA(etape+1); }
+function allerSuiv(){ if(valide(etape)&&etape<ETAPES.length-1) allerA(etape+1); }
 function allerPrec(){ if(etape>0){ etape--; $("#centre").scrollTop=0; rendre(); } }
 
 function banniereReprise(){
